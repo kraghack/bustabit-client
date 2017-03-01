@@ -5,9 +5,9 @@ import userInfo from '../../core/userInfo'
 import refresher from '../../refresher';
 import socket from '../../socket'
 import notification from '../../core/notification'
-import { isAmountInvalid } from '../../util/belt'
+import { isAmountInvalid, formatBalance, formatCurrency } from '../../util/belt'
 import NotLoggedIn from '../not-logged-in-well'
-
+import { tradeFee } from '../../util/config'
 
 class CreateTrade extends Component {
 
@@ -31,17 +31,21 @@ class CreateTrade extends Component {
 	}
 
   // this returns true if the form is valid
-  validate() {
-    const offerAmountError = isAmountInvalid(this.state.offerAmount);
-		const askAmountError = isAmountInvalid(this.state.askAmount);
-		const error = this.state.offerCurrency === this.state.askCurrency ? 'Currencies must be different' : null;
+  validate(values) {
+
+		let isValid = true;
+
+    const offerAmountError = isAmountInvalid(values.offerAmount);
+		const askAmountError = isAmountInvalid(values.askAmount);
+		const error = values.offerCurrency === values.askCurrency ? 'Currencies to trade must be different.' : null;
 		this.setState({
 			error,  // clears any other global errors
 			offerAmountError,
 			askAmountError
     });
-		const hasError = offerAmountError || askAmountError;
-		return !hasError;
+		isValid = isValid && !offerAmountError && !askAmountError && !error;
+
+		return isValid;
   }
 
   onOfferAmountChange(event) {
@@ -61,7 +65,7 @@ class CreateTrade extends Component {
     event.preventDefault();
     let { offerAmount, offerCurrency, askAmount, askCurrency } = this.state;
 
-    if (this.validate()) {
+    if (this.validate(this.state)) {
       offerAmount = Number.parseInt(offerAmount,10) * 100;
       askAmount = Number.parseInt(askAmount,10) * 100;
 			this.setState({ submitting: true, touched: true });
@@ -74,7 +78,7 @@ class CreateTrade extends Component {
 				.catch(error => {
 					this.setState({ submitting: false });
 					if (error === 'NOT_ENOUGH_AMOUNT') {
-						this.setState({ offerAmountError: 'You don\'t have enough of this to send' });
+						this.setState({ offerAmountError: 'You don\'t have enough '+ formatCurrency(offerCurrency) + ' to trade.' });
 						return;
 					}
 
@@ -90,10 +94,11 @@ class CreateTrade extends Component {
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
 
         <Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
+
           <Col xs={20} xsOffset={2} style={{ padding: 0}}>
+						{ offerAmountError && <strong className="red-error">{offerAmountError}</strong>}
             <h5>Offer <span className="text-muted">(I'm willing to trade)</span>:</h5>
             <Col xs={12}>
-              { offerAmountError && <strong className="red-error">{offerAmountError}</strong>}
             <FormGroup className={offerAmountError ? 'has-error' : ''}>
               <InputGroup>
                 <InputGroup.Addon>
@@ -129,9 +134,9 @@ class CreateTrade extends Component {
           </Col>
 
           <Col xs={20} xsOffset={2} style={{ padding: 0}}>
+						{ askAmountError && <strong className="red-error">{ askAmountError }</strong>}
             <h5>For <span className="text-muted">(If I receive)</span>:</h5>
             <Col xs={12}>
-              { askAmountError && <strong className="red-error">{ askAmountError }</strong>}
               <FormGroup className={ askAmountError ? 'has-error' : ''}>
                 <InputGroup>
                   <InputGroup.Addon>
@@ -163,9 +168,18 @@ class CreateTrade extends Component {
                 </InputGroup>
               </FormGroup>
             </Col>
+						{ error && <strong className="red-error">{error}</strong>}
+						<Col xs={24} sm={20}>
+							<br />
+							<p style={{alignSelf: 'flex-start'}}><span className="hl-word">Important: </span>
+								Creating a trade will result in a <span className="red-color">{ formatBalance(tradeFee) +' '+formatCurrency("BALANCE",tradeFee)} fee</span>, either the trade offer gets fulfilled or not.
+							</p>
+						</Col>
+
           </Col>
 
-					{ error && <strong className="red-error">{error}</strong>}
+
+
 
           <Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <button className='btn btn-success btn-lg' type="submit" disabled={ this.state.submitting }>

@@ -66,7 +66,7 @@ class Fuse extends Component {
 			this.setState({ submitting: true, touched: true });
 
 			const confirmMessage = 'Are you sure you want to fuse ' +
-				amount +' valor with '+ amount +' silver? This will result in '+ amount + (amount > 1 ? ' bits.' : ' bit.');
+				amount +' valor with '+ amount +' silver? This will result in '+ amount + (amount === '1' ? ' bit.' : ' bits.');
 
 			confirm(confirmMessage).then(
 				(result) => {
@@ -152,7 +152,7 @@ class Fuse extends Component {
 							<p className="key-muted">How do fusions work?</p>
 							<p>1 valor + 1 silver = 1 bit</p>
 							<p className="key-muted">Your fusion:</p>
-							<p>{amount} valor + {amount} silver = {amount} {amount > 1 ? 'bits' : 'bit'}</p>
+							<p>{amount} valor + {amount} silver = {amount} {amount === '1' ? 'bit' : 'bits'}</p>
 						</Col>
 					</Col>
 

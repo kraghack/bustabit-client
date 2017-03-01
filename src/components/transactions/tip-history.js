@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import userInfo from '../../core/userInfo'
 import refresher from '../../refresher';
 import socket from '../../socket'
-import { formatBalance } from '../../util/belt'
+import { formatBalance, formatCurrency } from '../../util/belt'
 
 
 class TipHistory extends PureComponent {
@@ -49,8 +49,7 @@ class TipHistory extends PureComponent {
 			<td>{ d.created }</td>
 			<td>{ d.uname }</td>
 			<td>{ d.toUname }</td>
-			<td>{ d.currency === "BALANCE" ? formatBalance(d.amount)+' bits'
-				: formatBalance(d.amount) +' '+ d.currency.toLowerCase()}</td>
+			<td>{ formatBalance(d.amount)+' '+ formatCurrency(d.currency, d.amount) }</td>
 		</tr>);
 	}
 

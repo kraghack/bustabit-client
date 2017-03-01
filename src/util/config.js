@@ -10,3 +10,4 @@ export const instantWithdrawalFee = 1000;
 
 export const tipFee = 100;
 
+export const tradeFee = 100;

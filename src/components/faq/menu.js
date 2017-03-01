@@ -50,6 +50,18 @@ class FaqMenu extends PureComponent {
         </Col>
 
         <Col sm={24} xs={24} style={{marginTop: '20px'}}>
+          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Withdrawals</h5>
+          <ul className="nav nav-pills nav-stacked">
+            <li role="presentation">
+              <Link to="/faq/how-to-withdraw">How do I withdraw bits?</Link>
+            </li>
+            <li role="presentation">
+              <Link to="/faq/withdrawal-fee">What's the withdrawal fee?</Link>
+            </li>
+          </ul>
+        </Col>
+
+        <Col sm={24} xs={24} style={{marginTop: '20px'}}>
           <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Game</h5>
           <ul className="nav nav-pills nav-stacked">
             <li role="presentation">
@@ -65,23 +77,8 @@ class FaqMenu extends PureComponent {
         </Col>
 
         <Col sm={24} xs={24} style={{marginTop: '20px'}}>
-          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Withdrawals</h5>
+          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Other Transactions</h5>
           <ul className="nav nav-pills nav-stacked">
-            <li role="presentation">
-              <Link to="/faq/how-to-withdraw">How do I withdraw bits?</Link>
-            </li>
-            <li role="presentation">
-              <Link to="/faq/withdrawal-fee">What's the withdrawal fee?</Link>
-            </li>
-          </ul>
-        </Col>
-
-        <Col sm={24} xs={24} style={{marginTop: '20px'}}>
-          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Transactions</h5>
-          <ul className="nav nav-pills nav-stacked">
-            <li role="presentation">
-              <Link to="/faq/how-to-trade">How can I trade in game?</Link>
-            </li>
             <li role="presentation">
               <Link to="/faq/how-to-tip">How can I tip someone?</Link>
             </li>
@@ -93,6 +90,18 @@ class FaqMenu extends PureComponent {
             </li>
             <li role="presentation">
               <Link to="/faq/how-to-fuse">How can I fuse valor with silver?</Link>
+            </li>
+          </ul>
+        </Col>
+
+        <Col sm={24} xs={24} style={{marginTop: '20px'}}>
+          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Trading</h5>
+          <ul className="nav nav-pills nav-stacked">
+            <li role="presentation">
+              <Link to="/faq/how-to-trade">How can I trade in game?</Link>
+            </li>
+            <li role="presentation">
+              <Link to="/faq/trade-fee">What is the trade fee?</Link>
             </li>
           </ul>
         </Col>

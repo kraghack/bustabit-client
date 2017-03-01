@@ -82,7 +82,7 @@ class Deposit extends PureComponent {
 					<Col xs={24} sm={20}>
 						<p style={{alignSelf: 'flex-start'}}><span className="hl-word">Tip: </span> There is no minimum or maximum deposit amount
 							but you will need to wait until <em>1 confirmation</em> for it to appear in your balance.
-							.</p>
+						</p>
 						<p className="text-muted" style={{alignSelf: 'flex-start'}}><span className="hl-word">Hint: </span>If you
 							don't know how to deposit, check the procedure <Link to="/faq/how-to-deposit">here</Link>.</p>
 					</Col>

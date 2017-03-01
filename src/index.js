@@ -100,6 +100,7 @@ import AccountSettingsMenu from './components/account/settings-menu'
 import DeleteAccount from './components/account/settings-delete-account'
 import SelfBan from './components/account/self-ban'
 import Mute from './components/chat/mute'
+import TradeFee from './components/faq/trade-fee'
 
 import { Router, Route, browserHistory } from 'react-router'
 
@@ -222,7 +223,7 @@ render(
             <Route path="faq/how-to-trade" components={ { body: HowToTrade} }/>
             <Route path="faq/how-to-tip" components={ { body: HowToTip} }/>
 						<Route path="faq/how-to-fuse" components={ { body: HowToFuse} }/>
-
+            <Route path="faq/trade-fee" components={ { body: TradeFee} }/>
           </Route>
 					<Route path="mute" components={{title: createTitleComponent("Mute"), body: Mute}}/>
           <Route path="admin" components={{title: createTitleComponent("Admin"), body: Admin }}/>

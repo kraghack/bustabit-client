@@ -85,7 +85,7 @@ class AddChat extends Component {
 							/>
               <InputGroup.Button>
                 <Button className="chat-rooms-btn" onClick={ () => chat.setShowAddChannels(!chat.showAddChannels) }>
-                  <i className="fa fa-comments-o"></i>
+                  <i className="fa fa-plus-circle"></i>
                 </Button>
               </InputGroup.Button>
             </InputGroup>

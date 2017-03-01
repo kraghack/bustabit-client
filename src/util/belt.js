@@ -184,7 +184,7 @@ export function validateEmail(email) {
 export function formatCurrency(currency, amount) {
 
 	if(currency === "BALANCE")
-		return amount ===  1 ?  'bit' : 'bits';
+		return Math.floor(amount) ===  100 ?  'bit' : 'bits';
 
 	console.assert(currency === 'VALOR'  || currency === 'SILVER');
 	return currency.toLowerCase();
