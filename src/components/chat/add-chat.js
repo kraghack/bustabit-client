@@ -46,9 +46,11 @@ class AddChat extends Component {
 		);
 
     return p.catch(err => {
+
     	const prefix = 'NOT_WAGERED_ENOUGH:';
 
     	if (typeof err === 'string' && err.startsWith(prefix)) {
+				// TODO:  subtract how much you're currently wagering, to further improve the error
 				const amount = err.slice(prefix.length);
 				notification.setMessage(<span><span className="red-tag">Error </span> In order to prevent spam, we require that you wager at least { formatBalance(amount) } bits more in order to chat</span>, 'error');
 			} else {

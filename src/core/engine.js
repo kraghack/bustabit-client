@@ -191,10 +191,16 @@ class Engine extends EventEmitter {
 			this.emit('BET_STATUS_CHANGED');
 		}
 
+		bankrollProfit() {
+			return this.bankroll - this.invested + this.divested;
+		}
+
 		setInfo(info) {
 			this.gameId = info.gameId;
 			this.gameState = info.gameState;
 			this.bankroll = info.bankroll;
+			this.invested = info.invested;
+			this.divested = info.divested;
 			this.playing = new Map(Object.entries(info.playing));
 			this.cashOuts = info.cashOuts;
 			this.history = info.history;

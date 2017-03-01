@@ -35,7 +35,7 @@ class BankrollOverview extends PureComponent {
         </Col>
         <Col sm={12} xs={24}>
           <Col xs={16}><span className="key-muted">Site's Profit: </span></Col>
-          <Col xs={8}><span className="bold">(TODO:)</span></Col>
+          <Col xs={8}><span className="bold">{ formatBalance(engine.bankrollProfit()) } bits</span></Col>
         </Col>
       </Row>
         <Row>
