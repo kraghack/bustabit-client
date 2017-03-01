@@ -49,13 +49,13 @@ class AccountOverview extends PureComponent {
 								<Col xs={12}><span className="key-muted">
 									<i className="fa fa-shield valor-color" aria-hidden="true"></i> Valor:
 								</span></Col>
-								<Col xs={12}><span className="bold">{userInfo.valor}</span></Col>
+								<Col xs={12}><span className="bold">{ formatBalance(userInfo.valor) }</span></Col>
 							</Col>
 							<Col sm={8} xs={24}>
 								<Col xs={12}><span className="key-muted">
 									<i className="fa fa-superpowers silver-color" aria-hidden="true"></i> Silver:
 								</span></Col>
-								<Col xs={12}><span className="bold">{userInfo.silver}</span></Col>
+								<Col xs={12}><span className="bold">{ formatBalance(userInfo.silver) }</span></Col>
 							</Col>
 							<Col sm={6} smOffset={18} xs={24}  style={{marginTop: '20px'}}>
 								<Link className="btn btn-info" to="/fuse"><i className="fa fa-compress"></i> Fusion</Link>
