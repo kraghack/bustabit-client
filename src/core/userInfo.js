@@ -105,6 +105,7 @@ class UserInfo extends EventEmitter {
   invest(amount, newStake) {
 		this.highWater += amount;
 		this.stake = newStake;
+		this.invested += amount;
 
 		// we have to call this last, because it has a sync emit:
 		this.changeBalance(-amount);
@@ -117,6 +118,7 @@ class UserInfo extends EventEmitter {
 		this.highWater -= amount;
 		this.stake = newStake;
 		this.silver += silver;
+		this.divested += amount + silver;
 
 		// we have to call this last, because it has a sync emit:
 		this.changeBalance(amount);

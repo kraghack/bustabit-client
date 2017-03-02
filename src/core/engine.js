@@ -192,7 +192,7 @@ class Engine extends EventEmitter {
 		}
 
 		bankrollProfit() {
-			return this.bankroll - this.invested + this.divested;
+			return this.invested - this.divested - this.bankroll;
 		}
 
 		setInfo(info) {
