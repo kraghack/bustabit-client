@@ -30,87 +30,52 @@ class RemoveFromBankroll extends PureComponent {
   }
 
   /// this returns true if the form is valid
-  validate(values) {
-    const amountError = isAmountInvalid(values.amount, 1e6, engine.bankroll * userInfo.stake);
+  validate() {
+    const amountError = isAmountInvalid(this.state.amount, 1e6, engine.bankroll * userInfo.stake);
     this.setState({
       amountError
     });
     return !amountError;
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    let { amount } = this.state;
 
-    if (this.validate(this.state)) {
-			this.setState({ submitting: true, touched: true });
-      amount = Number.parseFloat(amount) * 100; // convert to satoshis
-
-      if (!Number.isFinite(amount)) {
-        amount = Number.MAX_VALUE;
-      }
-
-			const confirmMessage = 'Are you sure you want to remove ' +
-				formatBalance(amount)+' bits from the Bankroll?';
-
-
-			confirm(confirmMessage).then(
-				(result) => {
-					console.log(result);
-					socket.send('divest', amount)
-						.then(() => {
-								this.setState({ submitting: false });
-								console.log('Removed from bankroll: ', amount);
-								browserHistory.push('/');
-								notification.setMessage('Removed from bankroll: '+ formatBalance(amount));
-							},
-							err => {
-								this.setState({ submitting: false });
-								console.error('Unexpected server error: ' + err);
-								notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
-							}
-						)
-				},
-				(result) => {
-					this.setState({ submitting: false });
-					console.log(result)
-				}
-			)
-
-    }
-  }
-
-	handleRemoveAll(event) {
+	handleSubmit(event, useAll) {
 		event.preventDefault();
-		const amount = Number.MAX_VALUE;
+
+		if (!this.validate()) return;
+
 		this.setState({ submitting: true, touched: true });
 
-			const confirmMessage = 'Are you sure you want to remove all your balance from the Bankroll?';
+		let amount = useAll ? Number.MAX_VALUE : Number.parseFloat(this.state.amount) * 100;
+		let formatedAmount = useAll ? 'all your ' : formatBalance(amount);
 
-			confirm(confirmMessage).then(
-				(result) => {
-					console.log(result);
-					socket.send('divest', amount)
-						.then(() => {
-								this.setState({ submitting: false });
-								browserHistory.push('/');
-								notification.setMessage('Your balance was removed from bankroll.');
-							},
-							err => {
-								this.setState({ submitting: false });
-								console.error('Unexpected server error: ' + err);
-								notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
-							}
-						)
-				},
-				(result) => {
-					this.setState({ submitting: false });
-					console.log(result)
-				}
-			)
 
+		const confirmMessage = 'Are you sure you want to remove ' + formatedAmount +' bits from the bankroll?';
+
+
+		return confirm(confirmMessage).then(
+			(result) => {
+				console.log(result);
+				socket.send('divest', amount)
+					.then(() => {
+							this.setState({ submitting: false });
+							console.log('Removed from bankroll: ', amount);
+							browserHistory.push('/');
+							notification.setMessage('Removed '+ formatBalance(amount) + ' from the bankroll');
+						},
+						err => {
+							this.setState({ submitting: false });
+							console.error('Unexpected server error: ' + err);
+							notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
+						}
+					)
+			}, () => {
+				this.setState({ submitting: false });
+			}
+		)
 
 	}
+
 
   render() {
     const { amountError }  = this.state;
@@ -119,7 +84,7 @@ class RemoveFromBankroll extends PureComponent {
         <Col xs={24} sm={20}>
           <h4>Remove from Bankroll:</h4>
           <br/>
-          <Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
+          <Form horizontal onSubmit={(event) => this.handleSubmit(event, false)}>
             { amountError && <strong className="red-error">{amountError}</strong>}
             <FormGroup className={amountError ? 'has-error' : ''}>
               <InputGroup>
@@ -144,7 +109,7 @@ class RemoveFromBankroll extends PureComponent {
           </Form>
 				</Col>
 				<Col xs={24} sm={20}>
-					<Form horizontal onSubmit={(event) => this.handleRemoveAll(event)}>
+					<Form horizontal onSubmit={(event) => this.handleSubmit(event, true)}>
 						<hr />
 						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
 							<button className='btn btn-warning btn-lg' type="submit" disabled={ this.state.submitting }>
