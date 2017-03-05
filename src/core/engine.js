@@ -3,8 +3,10 @@ import EventEmitter from 'events';
 import socket from '../socket'
 import chat from './chat'
 import userInfo from './userInfo'
+import notification from './notification'
 import { dilutionFee }  from '../util/config'
 import { growthFunc } from '../util/math'
+import { formatBalance } from '../util/belt'
 
 
 // POSSIBLE EVENTS:
@@ -13,6 +15,7 @@ import { growthFunc } from '../util/math'
 //  ... BET_STATUS_CHANGED  (anything to do with placing new bets...)
 //  ... PLAYERS_CHANGED     (anything to do with the player list..)
 //  ... HISTORY_CHANGED (new item in the history)
+
 
 
 class Engine extends EventEmitter {
@@ -388,6 +391,14 @@ socket.on('youDivested', divested => {
 	engine.divested += total;
 	engine.emit('BANKROLL_CHANGED');
 	userInfo.divest(divested.balance, divested.silver, newStake);
+
+
+	let extraMessage = '';
+	if (divested.silver > 0) {
+		extraMessage = '(' + formatBalance(divested.silver) + ' silver, as it was profit)';
+	}
+
+	notification.setMessage('You have removed '+ formatBalance(total) + ' bits from the bankroll ' + extraMessage);
 });
 
 

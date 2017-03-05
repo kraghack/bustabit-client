@@ -122,11 +122,10 @@ export function isAmountInvalid(amount, minAmount, maxAmount) {
 	minAmount = minAmount === undefined ? 100 : minAmount;
 
 	if (amount < minAmount)
-		return 'The amount is too small';
+		return 'The amount must be at least ' + formatBalance(minAmount);
 
 	if (maxAmount && amount > maxAmount)
-		return 'There\'s not enough balance';
-
+		return 'The amount must be less than ' + formatBalance(maxAmount);
 
 	return null;
 }

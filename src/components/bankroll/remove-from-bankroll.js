@@ -8,14 +8,17 @@ import engine from '../../core/engine'
 import userInfo from '../../core/userInfo'
 import { formatBalance, isAmountInvalid } from '../../util/belt'
 import confirm from '../../util/confirmation'
+import { minDivest } from '../../util/config'
 
 class RemoveFromBankroll extends PureComponent {
   constructor(props) {
     super(props);
+    this.firstInput = null; // ref to the first input
     this.state = {
       amount: '',
       amountError: null,
 			submitting: false,
+			blocking: false, // Are we waiting on the game to be ended
 			touched: false
     };
   }
@@ -23,15 +26,19 @@ class RemoveFromBankroll extends PureComponent {
 		this.firstInput.focus();
 	}
 
+	componentWillUnmount(){
+		this.unmounted = true;
+	}
+
   onAmountChange(event) {
     const amount = event.target.value;
-    const amountError = this.state.touched ? isAmountInvalid(amount, 1e6, engine.bankroll * userInfo.stake) : null;
+    const amountError = this.state.touched ? isAmountInvalid(amount, minDivest) : null;
     this.setState({amount, amountError});
   }
 
   /// this returns true if the form is valid
-  validate() {
-    const amountError = isAmountInvalid(this.state.amount, 1e6, engine.bankroll * userInfo.stake);
+  validate(useAll) {
+    const amountError = useAll ? false : isAmountInvalid(this.state.amount, minDivest);
     this.setState({
       amountError
     });
@@ -42,7 +49,7 @@ class RemoveFromBankroll extends PureComponent {
 	handleSubmit(event, useAll) {
 		event.preventDefault();
 
-		if (!this.validate()) return;
+		if (!this.validate(useAll)) return;
 
 		this.setState({ submitting: true, touched: true });
 
@@ -53,22 +60,39 @@ class RemoveFromBankroll extends PureComponent {
 		const confirmMessage = 'Are you sure you want to remove ' + formatedAmount +' bits from the bankroll?';
 
 
-		return confirm(confirmMessage).then(
-			(result) => {
-				console.log(result);
-				socket.send('divest', amount)
-					.then(() => {
-							this.setState({ submitting: false });
-							console.log('Removed from bankroll: ', amount);
-							browserHistory.push('/');
-							notification.setMessage('Removed '+ formatBalance(amount) + ' from the bankroll');
-						},
-						err => {
-							this.setState({ submitting: false });
-							console.error('Unexpected server error: ' + err);
-							notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
-						}
-					)
+		confirm(confirmMessage).then(
+			() => {
+				this.setState({ submitting: false });
+
+				const doRemove = () => {
+					if (this.unmounted) return;
+					this.setState({ blocking: false, submitting: true });
+					socket.send('divest', amount)
+						.then(() => {
+								if (this.unmounted) return;
+								this.setState({ blocking: false, submitting: false });
+
+
+								browserHistory.push('/');
+							},
+							err => {
+								if (this.unmounted) return;
+
+								if (err === 'NOT_IN_BETWEEN_GAMES') {
+									this.setState({ blocking: true });
+									socket.once('gameEnded', doRemove);
+									return;
+								}
+								this.setState({ blocking: false, submitting: false });
+
+								console.error('Unexpected server error: ' + err);
+								notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
+							}
+						)
+				};
+
+				doRemove();
+
 			}, () => {
 				this.setState({ submitting: false });
 			}
@@ -79,6 +103,21 @@ class RemoveFromBankroll extends PureComponent {
 
   render() {
     const { amountError }  = this.state;
+
+    let buttonContents;
+    let disabled;
+		if (this.state.blocking) {
+			buttonContents = <span><i className="fa fa-spinner fa-pulse fa-fw"></i> Please wait for the current game to end</span>;
+			disabled = true;
+		} else if (this.state.submitting) {
+    	buttonContents = <i className="fa fa-spinner fa-pulse fa-fw"></i>;
+			disabled = true;
+		} else {
+			buttonContents = 'Submit';
+			disabled = false;
+		}
+
+
     return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <Col xs={24} sm={20}>
@@ -97,31 +136,30 @@ class RemoveFromBankroll extends PureComponent {
                        value={this.state.amount}
 											 ref={(input) => { this.firstInput = input; }}
                        onChange={(event) => this.onAmountChange(event)}
+											 disabled={ disabled || engine.bankroll * userInfo.stake < minDivest  }
                 />
               </InputGroup>
             </FormGroup>
 
 						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-							<button className='btn btn-success btn-lg' type="submit" disabled={ this.state.submitting }>
-								{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Submit'}
+							<button className='btn btn-success btn-lg' type="submit" disabled={  disabled || engine.bankroll * userInfo.stake < minDivest }>
+								{ buttonContents }
 							</button>
 						</Col>
           </Form>
 				</Col>
+				{ !disabled &&
 				<Col xs={24} sm={20}>
 					<Form horizontal onSubmit={(event) => this.handleSubmit(event, true)}>
 						<hr />
 						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-							<button className='btn btn-warning btn-lg' type="submit" disabled={ this.state.submitting }>
-								{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Remove All'}
+							<button className='btn btn-warning btn-lg' type="submit" disabled={ userInfo.stake === 0.0 }>
+								Remove All
 							</button>
 						</Col>
 					</Form>
 				</Col>
-        <Col xs={24} sm={20}>
-          <p className="text-muted" style={{alignSelf: 'flex-start'}}><span className="hl-word">Hint: </span>If you
-            want to learn more about the bankroll, click <Link to="/faq/how-does-the-bankroll-work">here</Link>.</p>
-        </Col>
+				}
         <Col sm={6} xs={12} style={{marginTop: '20px'}}>
           <Link className="btn btn-info" to="/bankroll/history"><i className="fa fa-history"></i> History</Link>
         </Col>
