@@ -141,7 +141,7 @@ function getEmHeight(font) {
 // prettier value.
 function tickSeparation(s) {
   if (!Number.isFinite(s)) {
-    throw new Error("Is not a number: ", s)
+    throw new Error("Is not a number: " + s)
   }
 
   var r = 1;
