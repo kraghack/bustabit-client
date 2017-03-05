@@ -12,7 +12,7 @@ class BetInformation extends PureComponent {
 		super(props);
 		this.state = {
 			uname: '',
-			cashedAt: 0,
+			cashOut: 0,
 			payout: 0,
 			wager: 0,
 			created: new Date(),
@@ -24,18 +24,16 @@ class BetInformation extends PureComponent {
 	}
 
 	componentWillMount() {
-		socket.send('getBetInfo', Number.parseInt(this.props.params.betId,10))
+		socket.send('getBetInfo', Number.parseInt(this.props.params.betId, 10))
 			.then(betInfo => {
 				betInfo.created = new Date(betInfo.created);
-				betInfo.loading = false;
-				this.setState(betInfo)
-				console.log('bet info is :',betInfo);
+				this.setState({ loading: false, ...betInfo});
 			});
 	}
 
 
 	render() {
-		const {uname, loading, bust, created, id, cashedAt, gameId, wager } = this.state;
+		const {uname, loading, bust, created, id, cashOut, gameId, wager } = this.state;
 
 		if (loading) {
 			return <LoadingAnimation/>
@@ -51,9 +49,11 @@ class BetInformation extends PureComponent {
 						<h5><span className="key-muted">Game: </span><span className="bold"> <Link to={'/game/'+gameId}>{gameId}</Link></span></h5>
 						<h5><span className="key-muted">Bet: </span><span className="bold"> {formatBalance(wager)} bits</span></h5>
 						<h5><span className="key-muted">Busted at: </span><span className="bold"> {bust}</span></h5>
-						<h5><span className="key-muted">Cashed out: </span><span className={ cashedAt > 0 ? 'bold green-color' : 'bold red-color'}> { cashedAt ? cashedAt+'x' : '-' }</span></h5>
+						<h5><span className="key-muted">Cash out: </span>
+								<span className={ cashOut > 0 ? 'bold green-color' : 'bold red-color'}> { cashOut ? cashOut+'x' : '-' }</span>
+						</h5>
 						<h5><span className="key-muted">Profit: </span>
-							<span className={ cashedAt > 0 ? 'bold green-color' : 'bold red-color'}> { formatBalance(wager * (cashedAt - 1)) } bits</span>
+							<span className={ cashOut > 0 ? 'bold green-color' : 'bold red-color'}> { formatBalance(wager * (cashOut - 1)) } bits</span>
 						</h5>
 						<h5><span className="key-muted">Date: </span>
 							<span className="bold" style={{marginRight: '5px'}}> {created.toUTCString()}</span>

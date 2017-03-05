@@ -24,8 +24,8 @@ class GameInformation extends PureComponent {
 		socket.send('getGameInfo', Number.parseInt(this.props.params.gameId,10))
 					.then(gameInfo => {
 						gameInfo.created = new Date(gameInfo.created);
-						gameInfo.loading = false;
-						this.setState(gameInfo)
+
+						this.setState({ loading: false,  ...gameInfo});
 						//console.log('game info is :',gameInfo);
 
 					});
@@ -39,8 +39,8 @@ class GameInformation extends PureComponent {
 				bets.map(item => <tr key={item.id}>
 					<td><Link to={"/user/" + item.uname}>{item.uname}x</Link></td>
 					<td>{ formatBalance(item.wager) }</td>
-					<td>{ item.cashedAt ? item.cashedAt+'x' : '-' }</td>
-					<td>{ formatBalance(item.wager * (item.cashedAt - 1)) }</td>
+					<td>{ item.cashOut ? item.cashOut+'x' : '-' }</td>
+					<td>{ formatBalance(item.wager * (item.cashOut - 1)) }</td>
 					<td><Link to={'/bet/'+item.id}><button><i className="fa fa-link" aria-hidden="true"></i></button></Link></td>
 				</tr>
 			)}
