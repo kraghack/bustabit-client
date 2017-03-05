@@ -37,7 +37,7 @@ class GameInformation extends PureComponent {
 			<tbody>
 			{
 				bets.map(item => <tr key={item.id}>
-					<td><Link to={"/user/" + item.uname}>{item.uname}x</Link></td>
+					<td><Link to={"/user/" + item.uname}>{item.uname}</Link></td>
 					<td>{ formatBalance(item.wager) }</td>
 					<td>{ item.cashOut ? item.cashOut+'x' : '-' }</td>
 					<td>{ formatBalance(item.wager * (item.cashOut - 1)) }</td>
