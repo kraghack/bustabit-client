@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import socket from '../socket';
+import { objectEntries } from '../util/belt'
 
 // events:
 //  TABS_CHANGED: the channel list has changed, or focusedChannel, or friends changed...
@@ -89,7 +90,7 @@ class Chat extends EventEmitter {
 
 	initializeFriends(statusObj) {
 
-		const entries = Object.entries(statusObj);
+		const entries = objectEntries(statusObj);
 
 
 		for (const [uname, { online, history}] of entries) {
@@ -100,7 +101,7 @@ class Chat extends EventEmitter {
 		}
 
 
-		this.friends = new Map(Object.entries(statusObj));
+		this.friends = new Map(objectEntries(statusObj));
 		this.emit('TABS_CHANGED');
 	}
 
@@ -127,7 +128,7 @@ class Chat extends EventEmitter {
 
 	joinedChannels(history) {
 
-		const entries = Object.entries(history);
+		const entries = objectEntries(history);
 		for (const [channel, messages] of entries) {
 			for (const message of messages) {
 				message.created = new Date(message.created);

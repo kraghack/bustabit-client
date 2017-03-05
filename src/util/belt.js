@@ -188,3 +188,13 @@ export function formatCurrency(currency, amount) {
 	console.assert(currency === 'VALOR'  || currency === 'SILVER');
 	return currency.toLowerCase();
 }
+
+// a copy of Object.entries, cause safari doesn't support
+export function objectEntries(obj) {
+	const entries = [];
+	// eslint-disable-next-line
+	for (const key in obj) {
+		entries.push([key, obj[key]])
+	}
+	return entries;
+}

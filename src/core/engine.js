@@ -6,7 +6,7 @@ import userInfo from './userInfo'
 import notification from './notification'
 import { dilutionFee }  from '../util/config'
 import { growthFunc } from '../util/math'
-import { formatBalance } from '../util/belt'
+import { formatBalance, objectEntries } from '../util/belt'
 
 
 // POSSIBLE EVENTS:
@@ -204,7 +204,7 @@ class Engine extends EventEmitter {
 			this.bankroll = info.bankroll;
 			this.invested = info.invested;
 			this.divested = info.divested;
-			this.playing = new Map(Object.entries(info.playing));
+			this.playing = new Map(objectEntries(info.playing));
 			this.cashOuts = info.cashOuts;
 			this.history = info.history;
 
