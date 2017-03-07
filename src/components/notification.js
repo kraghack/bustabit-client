@@ -17,7 +17,7 @@ class Notification extends Component {
           style={false}
           className={ notification.type === 'error' ? 'notification-bar-error' : 'notification-bar'}
           activeClassName="active animated bounceIn"
-          dismissAfter={4000}
+          dismissAfter={3000}
           onDismiss={() =>  notification.clearMessage()}
           onClick={() =>  notification.clearMessage()}
         />

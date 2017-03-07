@@ -125,7 +125,7 @@ class Fuse extends Component {
 								<input type="number"
 											 placeholder="400"
 											 className="form-control"
-											 value={maxFusionAmount ? maxFusionAmount : amount}
+											 value={maxFusionAmount ? formatBalance(maxFusionAmount) : amount}
 											 ref={(input) => { this.firstInput = input; }}
 											 onChange={(event) => this.onAmountChange(event)}
 								/>
@@ -152,7 +152,7 @@ class Fuse extends Component {
 							<p className="key-muted">How do fusions work?</p>
 							<p>1 valor + 1 silver = 1 bit</p>
 							<p className="key-muted">Your fusion:</p>
-							<p>{amount} valor + {amount} silver = {amount} {amount === '1' ? 'bit' : 'bits'}</p>
+							<p>{formatBalance(amount)} valor + {formatBalance(amount)} silver = {formatBalance(amount)} {amount === '1' ? 'bit' : 'bits'}</p>
 						</Col>
 					</Col>
 

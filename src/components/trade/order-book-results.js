@@ -5,7 +5,7 @@ import refresher from '../../refresher';
 
 import socket from '../../socket'
 
-import { formatBalance } from '../../util/belt'
+import { formatBalance, formatCurrency } from '../../util/belt'
 
 
 class OrderBookResults extends PureComponent {
@@ -87,9 +87,9 @@ class OrderBookResults extends PureComponent {
 		{
 			this.state.orders.map(order => <tr key={order.id}>
 					<td>{order.uname}</td>
-					<td>{ formatBalance(order.offerAmount) } { offerCurrency }</td>
-					<td>{ formatBalance(order.askAmount) } { askCurrency }</td>
-					<td>{ order.askAmount / order.offerAmount } { askCurrency } / { offerCurrency }</td>
+					<td>{ formatBalance(order.offerAmount) } { formatCurrency(offerCurrency) }</td>
+					<td>{ formatBalance(order.askAmount) } { formatCurrency(askCurrency) }</td>
+					<td>{ order.askAmount / order.offerAmount } { formatCurrency(askCurrency) } / { formatCurrency(offerCurrency) }</td>
 					<td>
 						<HitOrderButton tradeId={order.id} isSelf={ userInfo.uname === order.uname } />
 					</td>
