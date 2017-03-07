@@ -30,10 +30,8 @@ class Fuse extends Component {
 		super(props);
 		this.firstInput = null; // this is a ref
 		this.state = {
-			amount: 0,
-			error: null,
+			amount: Math.floor(Math.min(userInfo.valor, userInfo.silver))/100, // This is what the person types, in bits
 			amountError: null,
-			maxFusionAmount: Math.min(userInfo.valor, userInfo.silver),
 			submitting: false,
 			touched: false
 		};
@@ -95,11 +93,11 @@ class Fuse extends Component {
 	}
 
 	maxFusionAmount() {
-		this.setState({amount: this.state.maxFusionAmount });
+		this.setState({amount: Math.floor(Math.min(userInfo.valor, userInfo.silver))/100 });
 	}
 
 	render() {
-		const {amountError, amount, maxFusionAmount}  = this.state;
+		const {amountError, amount}  = this.state;
 
 		return (
 			<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -125,7 +123,7 @@ class Fuse extends Component {
 								<input type="number"
 											 placeholder="400"
 											 className="form-control"
-											 value={maxFusionAmount ? formatBalance(maxFusionAmount) : amount}
+											 value={ amount}
 											 ref={(input) => { this.firstInput = input; }}
 											 onChange={(event) => this.onAmountChange(event)}
 								/>
@@ -152,7 +150,7 @@ class Fuse extends Component {
 							<p className="key-muted">How do fusions work?</p>
 							<p>1 valor + 1 silver = 1 bit</p>
 							<p className="key-muted">Your fusion:</p>
-							<p>{formatBalance(amount)} valor + {formatBalance(amount)} silver = {formatBalance(amount)} {amount === '1' ? 'bit' : 'bits'}</p>
+							<p>{amount} valor + {amount} silver = {amount} {amount === '1' ? 'bit' : 'bits'}</p>
 						</Col>
 					</Col>
 
