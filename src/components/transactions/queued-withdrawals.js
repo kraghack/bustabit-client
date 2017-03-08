@@ -6,7 +6,7 @@ import refresher from '../../refresher';
 import NotLoggedIn from '../not-logged-in-well'
 import userInfo from '../../core/userInfo'
 import { formatBalance } from '../../util/belt'
-import {processWithdrawalsFee} from '../../util/config'
+import {newInputFee, newOutputFee} from '../../util/config'
 import confirm from '../../util/confirmation'
 import notification from '../../core/notification'
 
@@ -22,7 +22,7 @@ class QueuedWithdrawals extends PureComponent {
   handleSubmit(event) {
     event.preventDefault();
     const confirmMessage = 'Are you sure you want to process the queued withdrawals for a fee of '
-      + formatBalance(processWithdrawalsFee) +' bits ?';
+      + formatBalance(newInputFee + newOutputFee) +' bits ?';
 		this.setState({ submitting: true, touched: true });
     confirm(confirmMessage).then(
         (result) => {
@@ -31,10 +31,8 @@ class QueuedWithdrawals extends PureComponent {
           console.log(result);
           socket.send('sendWithdrawals')
             .then(() => {
-								this.setState({ submitting: false});
-                console.log('Queued withdrawals will be processed.');
                 browserHistory.push('/');
-                notification.setMessage('Queued withdrawals will be processed.');
+                // should get a proper notification from the server
               },
               err => {
 								this.setState({ submitting: false});
@@ -58,52 +56,54 @@ class QueuedWithdrawals extends PureComponent {
   }
 
   render() {
-
-    if (!userInfo.uname) {
-      return (
-        <NotLoggedIn/>
-      )
-    }
     return (
-      <Col xs={24}>
-        <Col sm={18} xs={12} style={{marginTop: '20px'}}>
-          <h4 style={{textTransform: 'uppercase', letterSpacing: '3px'}}>Process Withdrawals</h4>
-        </Col>
-        <Col sm={6} xs={12} style={{marginTop: '20px'}}>
+			<Col style={{display: 'flex', flexDirection: 'column', alignItems: 'center' , marginTop: '20px'}}>
+				<Col xs={24}>
+					<Col sm={18} xs={12} style={{marginTop: '20px'}}>
+						<h4 style={{textTransform: 'uppercase', letterSpacing: '3px'}}>Process Withdrawals</h4>
+					</Col>
+					<Col sm={6} xs={12} style={{marginTop: '20px'}}>
 
-        </Col>
-        <Col xs={24} style={{marginTop: '10px'}}>
-          <p>
-            For privacy and efficiency, Bustabit groups all withdrawals into batches,
-            and they take some time to be processed, and actually be sent to your bitcoin address as requested.
-          </p>
-          <p>
-            However, we recognize some people need the bitcoin immediately, so we offer the option to expedite the process by clicking this button and paying a fee of {formatBalance(processWithdrawalsFee)} bits.
-          </p>
-        </Col>
-        <Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
-          <button className='btn btn-warning btn-lg' type="submit"
-									disabled={ this.state.submitting }>
-						{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Process Withdrawals'}
-					</button>
-          </Form>
-        </Col>
-        <Col xs={24}>
-          <p className="text-muted" style={{alignSelf: 'flex-start'}}>
-            If you want to check your past withdrawals and their status:
-            <span style={{marginLeft: '5px'}}>
-            <Link className="btn btn-info btn-xs" to="/transactions/withdrawals">
-              <i className="fa fa-history"></i> History</Link>
-          </span>
-          </p>
-        </Col>
-      </Col>
+					</Col>
+					<Col xs={24} style={{marginTop: '10px'}}>
+						<p>
+							For privacy and efficiency, Bustabit groups all withdrawals into batches,
+							and they take some time to be processed, and actually be sent to your bitcoin address as requested.
+						</p>
+						<p>
+							However, we recognize some people need the bitcoin immediately, so we offer the option to expedite the process
+							by clicking this button and paying a fee of {formatBalance(newInputFee + newOutputFee)} bits.
+						</p>
+					</Col>
+					<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+						<Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
+						<button className='btn btn-warning btn-lg' type="submit"
+										disabled={ this.state.submitting }>
+							{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Process Withdrawals'}
+						</button>
+						</Form>
+					</Col>
+					<Col xs={24}>
+						<p className="text-muted" style={{alignSelf: 'flex-start'}}>
+							If you want to check your past withdrawals and their status:
+							<span style={{marginLeft: '5px'}}>
+							<Link className="btn btn-info btn-xs" to="/transactions/withdrawals">
+								<i className="fa fa-history"></i> History</Link>
+						</span>
+						</p>
+					</Col>
+				</Col>
+			</Col>
     )
   }
 }
 
+function queuedWithdrawsWrapper() {
+	if (!userInfo.uname) { return <NotLoggedIn/> }
+	return <QueuedWithdrawals />
+}
 
-export default refresher(QueuedWithdrawals,
+
+export default refresher(queuedWithdrawsWrapper,
   [userInfo, 'UNAME_CHANGED']
 );

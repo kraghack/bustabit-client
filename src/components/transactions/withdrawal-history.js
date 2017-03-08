@@ -10,6 +10,7 @@ class WithdrawalHistory extends PureComponent {
 	constructor() {
 		super();
 		this.unmounted = false;
+		this.init = this.init.bind(this);
 		this.state = {
 			loading: true,
 			error: null,
@@ -18,6 +19,16 @@ class WithdrawalHistory extends PureComponent {
 	}
 
 	componentWillMount() {
+		this.init();
+		socket.on('withdrawalSent', this.init);
+	}
+
+	componentWillUnmount() {
+		this.unmounted = true;
+		socket.removeListener('withdrawalSent', this.init);
+	}
+
+	init() {
 		socket.send('getWithdrawalHistory')
 			.then(withdrawals => {
 				if (this.unmounted) return;
@@ -25,13 +36,9 @@ class WithdrawalHistory extends PureComponent {
 			})
 			.catch(error => {
 				console.error('Got an error from the server when requesting withdrawals: ', error);
+				if (this.unmounted) return;
 				this.setState({ error, loading: false })
 			});
-	}
-
-	componentWillUnmount() {
-		this.unmounted = true;
-
 	}
 
 

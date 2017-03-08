@@ -8,16 +8,8 @@ import socket from '../socket'
 import { formatBalance } from '../util/belt'
 import confirm from '../util/confirmation'
 import notification from '../core/notification'
-import {  withdrawalFee, instantWithdrawalFee } from '../util/config'
+import {  newInputFee, newOutputFee } from '../util/config'
 import browserSize from '../core/browser-size'
-
-
-
-function validateBtcAddress(address) {
-  if (!address)
-    return 'Please enter your bitcoin address for us to send your bits.';
-}
-
 
 
 class Withdraw extends Component {
@@ -39,29 +31,25 @@ class Withdraw extends Component {
 		this.firstInput.focus();
 	}
 
-	validateAmount(amount) {
+	isInvalidAmount(amount) {
 
 		if (!amount)
 			return 'Please enter the amount of bits to withdraw.';
 
-		if (amount < 400)
-			return 'The minimum amount for withdrawal is 400 bits.';
+		if (amount < 100)
+			return 'The minimum amount for withdrawal is 100 bits.';
 
 		let total = Number.parseFloat(this.getTotal());
 
 
 		if (total > userInfo.balance)
 			return 'You don\'t have enough balance.';
-
-		console.log('the total is: ',total)
-		console.log('get total func is', this.getTotal())
-		console.log('user balance is: ', userInfo.balance)
 	}
 
 	validate() {
 		let isValid = true;
 
-		const amountError = this.validateAmount(this.getAmount());
+		const amountError = this.isInvalidAmount(this.getAmount());
 
 		this.setState({
 			amountError
@@ -83,7 +71,7 @@ class Withdraw extends Component {
 
 	onAmountChange(event) {
 		const amount = event.target.value;
-		const amountError = this.state.touched ? this.validateAmount(amount) : null;
+		const amountError = this.state.touched ? this.isInvalidAmount(amount) : null;
 		this.setState({amount, amountError});
 	}
 
@@ -99,65 +87,77 @@ class Withdraw extends Component {
 		let { address, instantWithdrawal } = this.state;
 		let amount = this.getAmount();
 
-		if (this.validate()) {
-			this.setState({ submitting: true, touched: true });
-			amount = Number.parseFloat(amount) * 100;
+		console.log('instant withdrawal is: ', instantWithdrawal);
 
-      const confirmMessage = 'Are you sure you want to withdraw ' +
-        formatBalance(amount)+' bits? Your total withdrawal would be '+
-        this.getTotal()+' bits. (Including the '+ formatBalance(withdrawalFee)+' bits withdrawal fee).';
+		if (!this.validate()) return;
+
+		this.setState({ submitting: true, touched: true });
+		amount = Number.parseFloat(amount) * 100;
+
+		const confirmMessage = 'Are you sure you want to withdraw ' +
+			formatBalance(amount)+' bits? Your total withdrawal would be '+
+			formatBalance(this.getTotal()) +' bits. (Including the '+ formatBalance(this.getTotalFee())+' bits  fee).';
 
 
-      confirm(confirmMessage).then(
-        (result) => {
-          console.log(result);
-          socket.send('withdraw', {amount, address, instantWithdrawal})
-            .then(() => {
-                console.log('Requested withdrawal: ', amount);
-								this.setState({ submitting: false});
-                browserHistory.push('/');
-                notification.setMessage('We are now processing your withdrawal.');
-              },
-              error => {
-								this.setState({ submitting: false });
-								switch (error) {
-									case "INVALID_ADDRESS":
-										console.error('The address ' + address + ' is not valid.');
-										notification.setMessage(<span><span className="red-tag">Error </span> The address {address} is not valid. Please try again. </span>, 'error');
-										break;
-									default:
-										console.error('Unexpected server error: ' + error);
-										notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {error}.</span>, 'error');
-								}
-              }
-            )
-        },
-        (result) => {
-					this.setState({ submitting: false });
-          console.log(result)
-        }
-      )
-		}
+		confirm(confirmMessage).then(
+			(result) => {
+				socket.send('withdraw', {amount, address })
+					.then(() => {
 
-		console.log('The information submitted is: Amount: ', amount, ' Address: ', address);
+							if (instantWithdrawal) {
+								socket.send('sendWithdrawals').then(() => {
+									browserHistory.push('/transactions/withdrawals');
+								}, () => {
+									notification.setMessage('Your withdrawal was queued, but there seems to have been a problem with the' +
+										'instant withdrawal. You were no charged for this, and we will process your withdrawal ASAP', 'error');
+									browserHistory.push('/transactions/withdrawals');
+								});
+								return;
+							}
+
+							browserHistory.push('/transactions/withdrawals');
+							notification.setMessage('Your withdrawal has been queued');
+						},
+						error => {
+							this.setState({ submitting: false });
+							switch (error) {
+								case "INVALID_ADDRESS":
+									console.error('The address ' + address + ' is not valid.');
+									notification.setMessage(<span><span className="red-tag">Error </span> The address {address} is not valid. Please try again. </span>, 'error');
+									break;
+								default:
+									console.error('Unexpected server error: ' + error);
+									notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {error}.</span>, 'error');
+							}
+						}
+					)
+			},
+			(result) => {
+				this.setState({ submitting: false });
+				console.log(result)
+			}
+		)
+
 	}
 
 	getTotal() {
-	  let { amount } = this.state;
-	  const { instantWithdrawal } = this.state;
+	  let amount = this.getAmount();
 	  amount = ( Number.parseFloat(amount) || 0 )  * 100;
 
-    const total = amount + withdrawalFee + ( instantWithdrawal ? instantWithdrawalFee : 0 );
-    return total;
+    return amount + this.getTotalFee();
   }
 
-  // returns a string for the input box
+  getTotalFee() {
+		return newOutputFee + (this.state.instantWithdrawal ?  newOutputFee + newInputFee  : 0) +
+				userInfo.unpaidDeposits * newInputFee;
+	}
+
+  // returns a number for the input box
   getAmount() {
-		const { amount } = this.state;
-		if ( amount === null ) {
-			const { instantWithdrawal } = this.state;
-			const max = Math.floor(userInfo.balance - withdrawalFee - (instantWithdrawal ? instantWithdrawalFee : 0));
-			return (max / 100 ).toFixed(2);
+		let { amount } = this.state;
+		if ( amount === null) {
+			const max = Math.max(Math.floor(userInfo.balance - this.getTotalFee()), 0);
+			amount = (max / 100).toString();
 		}
 		return amount;
 	}
@@ -169,7 +169,7 @@ class Withdraw extends Component {
 
 
 	render() {
-		const {amountError, addressError, address, amount, instantWithdrawal}  = this.state;
+		const {amountError, addressError, address, instantWithdrawal}  = this.state;
 
 		const total = this.getTotal();
 
@@ -234,18 +234,20 @@ class Withdraw extends Component {
 											 onChange={() => this.changeInstantWithdrawalSelected()}
 
 								/>
-								Instant Withdrawal ( + {formatBalance(instantWithdrawalFee)} bits )
+								Instant Withdrawal ( + {formatBalance(newInputFee + newOutputFee)} bits )
 							</label>
 						</div>
 					</Col>
 
 					<Col xs={20} xsOffset={2} className="well">
 						<Col xs={12}>Amount to Withdraw: </Col>
-						<Col xs={12}>{amount} bits</Col>
-						<Col xs={12}>Withdrawal Fee: <small><Link to="/faq/withdrawal-fee">What is this?</Link></small></Col>
-						<Col xs={12}>{formatBalance(withdrawalFee)} bits</Col>
+						<Col xs={12}>{ formatBalance(Number.parseFloat(this.getAmount() || 0) * 100) } bits</Col>
+						<Col xs={12}>Withdrawal Fee:</Col>
+						<Col xs={12}>{formatBalance(newOutputFee)} bits</Col>
+						<Col xs={12}>Unpaid Deposit Fee: <small><Link to="/faq/deposit-fee">What is this?</Link></small></Col>
+						<Col xs={12}>{formatBalance(userInfo.unpaidDeposits * newInputFee)} bits ({ userInfo.unpaidDeposits } x {formatBalance(newInputFee)} bits)</Col>
 						<Col xs={12}>Instant Withdrawal Fee:</Col>
-						<Col xs={12} className="bold">{ instantWithdrawal ? formatBalance(instantWithdrawalFee) : 0 } bits</Col>
+						<Col xs={12} className="bold">{ instantWithdrawal ? formatBalance(newInputFee + newOutputFee) : 0 } bits</Col>
 						<Col xs={12}>Total:</Col>
 						<Col xs={12} className={ total > userInfo.balance ? "bold red-color" : "bold"}>{formatBalance(total)} bits</Col>
 					</Col>
@@ -277,12 +279,21 @@ class Withdraw extends Component {
 	}
 }
 
+
+
+function validateBtcAddress(address) {
+	if (!address)
+		return 'Please enter your bitcoin address for us to send your bits.';
+}
+
+
 function withdrawWrapper() {
 	if (!userInfo.uname) { return <NotLoggedIn/> }
 	return <Withdraw />
 }
 
 
+// TODO: missing listening for unpaid_deposits...
 export default refresher(withdrawWrapper,
 	[userInfo, 'UNAME_CHANGED', 'BALANCE_CHANGED'],
 	[browserSize, 'WIDTH_CHANGED']

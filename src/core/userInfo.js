@@ -13,6 +13,7 @@ import chat from './chat'
 //  HAS_MFA_CHANGED
 //  EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED
 //  EMAIL_CHANGED
+//  UNPAID_DEPOSITS_CHANGED
 
 class UserInfo extends EventEmitter {
 
@@ -37,7 +38,7 @@ class UserInfo extends EventEmitter {
 		this.profitATH = 0;
 		this.profitATL = 0;
 		this.silver = 0.0;
-		this.stake = 1;
+		this.stake = 0;
 		this.uname = '';
 		this.unpaidDeposits = 0;
 		this.valor = 0.0;
@@ -67,6 +68,7 @@ class UserInfo extends EventEmitter {
 		this.emit('BANKROLL_STATS_CHANGED');
 		this.emit('HAS_MFA_CHANGED');
 		this.emit('EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED');
+		this.emit('UNPAID_DEPOSITS_CHANGED');
 	}
 
 	logOut() {
@@ -78,6 +80,7 @@ class UserInfo extends EventEmitter {
 		this.emit('BANKROLL_STATS_CHANGED');
 		this.emit('HAS_MFA_CHANGED');
 		this.emit('EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED');
+		this.emit('UNPAID_DEPOSITS_CHANGED')
 	}
 
   // increase the balance by amount
@@ -176,10 +179,16 @@ socket.on('deposit', d => {
 	userInfo.changeBalance(d.amount);
 
 	if (d.amount > 0) {
-		notification.setMessagenotification.setMessage("Your account has been credited "  + formatBalance(d.amount) + " bits from deposit " + d.txid);
+		userInfo.unpaidDeposits++;
+		userInfo.emit('UNPAID_DEPOSITS_CHANGED');
+
+		notification.setMessage("Your account has been credited "  + formatBalance(d.amount) + " bits from deposit " + d.txid);
+	} else if (d.amount < 0) {
+		userInfo.unpaidDeposits--;
+		userInfo.emit('UNPAID_DEPOSITS_CHANGED');
 	} else {
 		// TODO: much smarter notifications...
-		notification.setMessage("deposit detected")
+		notification.setMessage("incoming deposit detected")
 	}
 
 
@@ -234,6 +243,17 @@ socket.on('emergencyWithdrawalAddressChanged', address => {
 
 socket.on('emailUpdated', email => {
 	userInfo.setEmail(email);
+});
+
+
+socket.on('youSentWithdrawal', fee => {
+	userInfo.unpaidDeposits = 0;
+	userInfo.changeBalance(-fee);
+	userInfo.emit('UNPAID_DEPOSITS_CHANGED');
+});
+
+socket.on('withdrawalSent', withdrawal => {
+	notification.setMessage('Your withdrawal of ' + formatBalance(withdrawal.amount) + ' bits to ' + withdrawal.address + ' has been sent!')
 });
 
 export default userInfo;
