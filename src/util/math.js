@@ -1,4 +1,4 @@
-
+import { dilutionFee } from './config'
 //const maxOutcome = Math.pow(2,32);
 
 
@@ -44,13 +44,24 @@ export function floorTo(value, exp) {
 
 
 export function calcGamePayout(ms) {
-	var gamePayout = Math.floor(100 * growthFunc(ms)) / 100;
+	const gamePayout = Math.floor(100 * growthFunc(ms)) / 100;
 	console.assert(isFinite(gamePayout));
 	return gamePayout;
 }
 
 export function growthFunc(ms) {
 	console.assert(typeof ms === 'number' && ms >= 0);
-	var r = 0.0001;
+	const r = 0.0001;
 	return Math.pow(2, r * ms);
+}
+
+// returns as a number
+export function realDilutionFee(amount, oldStake, bankroll) {
+	// derived using ...
+	// const stake = (o * p + (1-f)*a) / (p + (1-f) * a);
+	// const make = stake * f * a;
+	// const dilutionFee = (f * a) - make;
+	// const d = dilutionFee / a;
+
+	return (dilutionFee * (-1 + oldStake) * bankroll)/(-amount + amount * dilutionFee - bankroll);
 }

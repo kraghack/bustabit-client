@@ -44,25 +44,33 @@ class BankrollHistory extends PureComponent {
 	}
 
 	results() {
-		return this.state.history.map(d => <tr key={ d.id }>
-			<td>{ d.created }</td>
-			<td>{ d.amount > 0 ? 'Added' : 'Removed'}</td>
-			<td>{ formatBalance(d.amount) } bits { d.silver ? '/'+d.silver+' silver' : '' }</td>
-		</tr>);
+		return this.state.history.map(d => {
+			let balanceDelta = d.amount - d.silver;
+
+			return <tr key={ d.id }>
+				<td>{ d.created }</td>
+				<td>{ formatBalance(d.preBankroll) } bits</td>
+				<td>{ d.amount > 0 ? 'Added' : 'Removed' }</td>
+				<td>{ Math.floor(balanceDelta) !== 0 && formatBalance(balanceDelta) + ' bits' }
+					{ d.silver !== 0 && ' '+ formatBalance(d.silver) +' silver'}
+				</td>
+			</tr>
+		});
 	}
 
   render() {
     return (
       <Row>
         <Col sm={18} xs={12} style={{marginTop: '20px'}}>
-          <h4 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Your Bankroll History</h4>
+          <h4 style={{ letterSpacing: '3px'}}>YOUR BANKROLL HISTORY</h4>
         </Col>
         <Col xs={24} style={{marginTop: '10px'}}>
           <Table striped bordered condensed hover responsive className="history-table">
             <thead className="table-header">
             <tr>
-              <th>Created</th>
-              <th>Operation</th>
+              <th>Time</th>
+							<th>Bankroll At Time</th>
+							<th>Operation</th>
               <th>Amount</th>
             </tr>
             </thead>

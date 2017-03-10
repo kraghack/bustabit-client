@@ -9,6 +9,7 @@ import userInfo from '../../core/userInfo'
 import { formatBalance, isAmountInvalid } from '../../util/belt'
 import confirm from '../../util/confirmation'
 import { minInvest } from '../../util/config'
+import { realDilutionFee } from '../../util/math'
 
 class AddToBankroll extends PureComponent {
 	constructor(props) {
@@ -45,6 +46,18 @@ class AddToBankroll extends PureComponent {
 		return !amountError;
 	}
 
+	getDilutionFee(useAll) {
+		let amount;
+		if (useAll) {
+			amount = userInfo.balance;
+		}  else {
+			const n = Number.parseFloat(this.state.amount);
+			amount = n ? n : 0;
+		}
+
+		return (realDilutionFee(amount, userInfo.stake, engine.bankroll)*100).toFixed(2);
+	}
+
 
 	handleSubmit(event, useAll) {
 		event.preventDefault();
@@ -57,7 +70,8 @@ class AddToBankroll extends PureComponent {
 		let formatedAmount = useAll ? 'all your ' : formatBalance(amount);
 
 
-		const confirmMessage = 'Are you sure you want to add ' + formatedAmount +' bits to the bankroll?';
+		const confirmMessage = 'Are you sure you want to add ' + formatedAmount +' bits to the bankroll? ' +
+			'You will need to pay ~' + this.getDilutionFee(useAll) + '% to previous investors in dilution fees!';
 
 
 		confirm(confirmMessage).then(
