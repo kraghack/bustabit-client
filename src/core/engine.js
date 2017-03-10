@@ -22,15 +22,10 @@ class Engine extends EventEmitter {
   constructor() {
     super();
 		this.setMaxListeners(100);
-
-
-    /** Max bet will be sent by the server in the future, for now is a constant **/
-    this.maxBet = 1e8;
     
     
     this.bust = 0;
     this.force = false;
-
 
 
 		// This is a mapping of uname to bet amount. All these have not yet cashed out!
@@ -50,9 +45,6 @@ class Engine extends EventEmitter {
 
 		/** The game id of the current game */
 		this.gameId = null;
-
-		/** How much can be won this game */
-		this.maxWin = null;
 
 		/**
 		 * Client side times:
@@ -116,6 +108,13 @@ class Engine extends EventEmitter {
 			return Date.now() - this.startTime;
 		}
 
+		getMaxBet() {
+  		return this.bankroll * 0.01; // TODO: use config..
+		}
+
+		getMaxProfit() {
+  		return this.bankroll * 0.002; // TODO: use the config
+		}
 
 		getElapsedTimeWithLag() {
 			if(this.gameState === 'GAME_IN_PROGRESS') {
@@ -236,12 +235,13 @@ socket.on('gameStarting', info => {
 	engine.cashedAt = 0;
 
   engine.gameState = 'GAME_STARTING';
+  engine.bankroll = info.bankroll;
 
   const timeTillStart = 5000; // TODO: this should be sent by the server?
 
   engine.startTime = Date.now() + timeTillStart;
-  engine.maxWin = info.maxWin;
-  
+
+
   // Every time a game is starting, we check if there's a queued bet
   if (engine.nextWager) {
 		socket.send('bet', {
@@ -252,6 +252,7 @@ socket.on('gameStarting', info => {
 		engine.nextPayout = null;
 	}
 
+	engine.emit('BANKROLL_CHANGED');
 	engine.emit('PLAYERS_CHANGED');
 	engine.emit('GAME_STATE_CHANGED');
 });

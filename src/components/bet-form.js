@@ -5,6 +5,9 @@ import { formatBalance } from '../util/belt'
 import BetButton from './bet-button'
 
 import engine from '../core/engine'
+import MaxProfit from './max-profit'
+import MaxBet from './max-bet'
+
 
 
 
@@ -52,6 +55,16 @@ class BetForm extends Component {
               disabled={ Object.keys(errors).length !== 0 }
             />
           </Col>
+						<Col xs={12} style={{ display: 'flex', justifyContent: 'center'}}>
+							<div>
+								<span style={textMuted}>Max Bet: </span> <MaxBet />
+							</div>
+						</Col>
+						<Col xs={12} style={{ display: 'flex', justifyContent: 'center'}}>
+							<div>
+								<span style={textMuted}>Max Profit: </span> <MaxProfit />
+							</div>
+						</Col>
 					<Col xs={12} style={{ display: 'flex', justifyContent: 'center'}}>
 						<div>
 							<span style={textMuted}>Profit: </span> { this.potentialProfit(errors) }
