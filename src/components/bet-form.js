@@ -26,6 +26,7 @@ class BetForm extends Component {
 	}
 
 	bet() {
+		this.setState({ error: null });
 		let { wager, payout } = this.state;
 
 		wager = Number.parseInt(wager,10) * 100;
