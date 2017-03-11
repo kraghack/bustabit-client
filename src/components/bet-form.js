@@ -21,9 +21,9 @@ class BetForm extends Component {
 		this.state = {
 			wager: '1',
 			payout: '2',
+			error: null, // e.g. set by the server
 		};
 	}
-
 
 	bet() {
 		let { wager, payout } = this.state;
@@ -31,12 +31,14 @@ class BetForm extends Component {
 		wager = Number.parseInt(wager,10) * 100;
 		payout = Number.parseFloat(payout);
 
-		engine.bet(wager, payout);
+		engine.bet(wager, payout).catch(
+			(error) => this.setState({ error })
+		);
 	}
 
   render() {
 
-		const errors = validate(this.state);
+		const errors = this.validate();
 
     return (
 
@@ -52,7 +54,7 @@ class BetForm extends Component {
           <Col md={24} sm={6} xs={7} style={{ display: 'flex', justifyContent: 'center', paddingRight: '0px'}}>
             <BetButton
               onBet={ () => this.bet() }
-              disabled={ Object.keys(errors).length !== 0 }
+              disabled={ !!(errors['payout'] || errors['wager']) }
             />
           </Col>
 						<Col xs={12} style={{ display: 'flex', justifyContent: 'center'}}>
@@ -132,7 +134,7 @@ class BetForm extends Component {
 	}
 
 	potentialProfit(errors) {
-		if (Object.keys(errors).length !== 0) {
+		if (errors['payout'] || errors['wager']) {
 			return '???';
 		}
 
@@ -146,9 +148,35 @@ class BetForm extends Component {
 
 		const potentialProfit = wager * (payout - 100);
 
-		const unit = Math.floor(potentialProfit) === 100 ? ' bit' : ' bits';
+		const unit = Math.floor(potentialProfit) === 100 ? 'bit' : 'bits';
 
-		return formatBalance(potentialProfit) + unit;
+		return <span>{ formatBalance(potentialProfit) }&nbsp;{unit}</span>;
+	}
+
+	validate() {
+		const errors = {
+			_error: this.state.error
+		};
+
+		const { payout, wager } = this.state;
+
+
+		const vp = validatePayout(payout);
+
+		if (vp) {
+			errors['payout'] = vp;
+			errors['_error'] = vp;
+		}
+
+		const vw = validateWager(wager);
+
+		if (vw) {
+			errors['wager'] = vw;
+			errors['_error'] = vw;
+		}
+
+		return errors;
+
 	}
 }
 
@@ -189,25 +217,6 @@ function validatePayout(payout) {
 }
 
 
-function validate(values) {
-  const errors = {};
 
-  const vp = validatePayout(values.payout);
-
-  if (vp) {
-    errors['payout'] = vp;
-    errors['_error'] = vp;
-  }
-
-  const vw = validateWager(values.wager);
-
-  if (vw) {
-    errors['wager'] = vw;
-    errors['_error'] = vw;
-  }
-
-  return errors;
-
-}
 
 export default BetForm;

@@ -76,11 +76,7 @@ class Engine extends EventEmitter {
 		 * If a number, how much to bet next round
 		 * Saves the queued bet if the game is not 'game_starting', cleared in 'bet_placed' by us and 'game_started' and 'cancel bet'
 		 */
-		this.nextWager = null;
-
-		/** Complements nextWager queued bet with the queued autoCashOut */
-		this.nextPayout = null;
-
+		this.next = null; // { wager, payout, resolve, reject};
 
 
 		/** Store the id of the timer to check for lag **/
@@ -109,11 +105,11 @@ class Engine extends EventEmitter {
 		}
 
 		getMaxBet() {
-  		return this.bankroll * 0.01; // TODO: use config..
+  		return this.bankroll * 0.002; // TODO: use config..
 		}
 
 		getMaxProfit() {
-  		return this.bankroll * 0.002; // TODO: use the config
+  		return this.bankroll * 0.01; // TODO: use the config
 		}
 
 		getElapsedTimeWithLag() {
@@ -157,30 +153,31 @@ class Engine extends EventEmitter {
 			if (this.gameState === 'GAME_STARTING') {
 				if (this.placingBet || this.wager) {
 					console.warn('You were already placing a bet');
-					return;
+					return Promise.reject('You were already placing a bet');
 				}
 
 				this.placingBet = true;
 
 				this.emit('BET_STATUS_CHANGED');
-
 				return socket.send('bet', { wager, payout });
-			} else {
-				this.nextWager = wager;
-				this.nextPayout = payout;
 			}
 
-			this.emit('BET_STATUS_CHANGED');
-			return Promise.resolve(true);
+			return new Promise((resolve, reject) => {
+
+				this.next = { wager, payout, resolve, reject };
+				this.emit('BET_STATUS_CHANGED');
+
+			});
+
+
 		}
 
 		isBetQueued() {
-			return !!this.nextWager;
+			return !!this.next;
 		}
 
 		cancelQueuedBet() {
-			this.nextWager = null;
-			this.nextPayout = null;
+			this.next = null;
 			this.emit('BET_STATUS_CHANGED');
 		}
 
@@ -243,13 +240,11 @@ socket.on('gameStarting', info => {
 
 
   // Every time a game is starting, we check if there's a queued bet
-  if (engine.nextWager) {
-		socket.send('bet', {
-			wager: engine.nextWager,
-			payout: engine.nextPayout
-		});
-		engine.nextWager = null;
-		engine.nextPayout = null;
+  if (engine.next) {
+  	const { wager, payout, resolve, reject } = engine.next;
+
+		engine.next = null;
+		socket.send('bet', { wager, payout }).then(resolve, reject);
 	}
 
 	engine.emit('BANKROLL_CHANGED');
