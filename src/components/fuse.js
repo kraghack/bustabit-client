@@ -56,40 +56,41 @@ class Fuse extends Component {
 
 	handleSubmit(event) {
 		event.preventDefault();
+
+		if (!this.validate(this.state)) return;
+
 		let { amount } = this.state;
 
-		if (this.validate(this.state)) {
+		amount = Number.parseFloat(amount);
+		this.setState({ submitting: true, touched: true });
 
-			amount = Number.parseFloat(amount);
-			this.setState({ submitting: true, touched: true });
+		const confirmMessage = 'Are you sure you want to fuse ' +
+			amount +' valor with '+ amount +' silver? This will result in '+ amount + (amount === '1' ? ' bit.' : ' bits.');
 
-			const confirmMessage = 'Are you sure you want to fuse ' +
-				amount +' valor with '+ amount +' silver? This will result in '+ amount + (amount === '1' ? ' bit.' : ' bits.');
+		confirm(confirmMessage).then(
+			(result) => {
+				console.log(result);
 
-			confirm(confirmMessage).then(
-				(result) => {
-					console.log(result);
+				socket.send('fuse', Math.floor(amount * 100))
+					.then(() => {
+							console.log('Requested fusion: ', amount);
+							this.setState({ submitting: false});
+							browserHistory.push('/');
+							notification.setMessage(<span><span className="green-tag">Success!</span> You have fused valor and silver into {amount} {amount > 1 ? ' bits.' : ' bit.'}</span>);
+						},
+						err => {
+							console.error('Unexpected server error: ' + err);
+							this.setState({ submitting: false});
+							notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
+						}
+					)
+			},
+			(result) => {
+				this.setState({ submitting: false });
+				console.log(result)
+			}
+		)
 
-					socket.send('fuse', {amount})
-						.then(() => {
-								console.log('Requested fusion: ', amount);
-								this.setState({ submitting: false});
-								browserHistory.push('/');
-								notification.setMessage(<span><span className="green-tag">Success!</span> You have fused valor and silver into {amount} {amount > 1 ? ' bits.' : ' bit.'}</span>);
-							},
-							err => {
-								console.error('Unexpected server error: ' + err);
-								this.setState({ submitting: false});
-								notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
-							}
-						)
-				},
-				(result) => {
-					this.setState({ submitting: false });
-					console.log(result)
-				}
-			)
-		}
 	}
 
 	maxFusionAmount() {
