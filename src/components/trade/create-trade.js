@@ -172,7 +172,7 @@ class CreateTrade extends Component {
 						<Col xs={24} sm={20}>
 							<br />
 							<p style={{alignSelf: 'flex-start'}}><span className="hl-word">Important: </span>
-								Creating a trade will result in a <span className="red-color">{ formatBalance(tradeFee) +' '+formatCurrency("BALANCE",tradeFee)} fee</span>, either the trade offer gets fulfilled or not.
+								Creating a trade will result in a <span className="red-color">{ formatBalance(tradeFee) +' '+formatCurrency("BALANCE",tradeFee)} fee</span>, regardless of if gets fulfilled or not.
 							</p>
 						</Col>
 
