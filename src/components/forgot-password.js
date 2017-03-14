@@ -4,18 +4,19 @@ import { validateEmail } from '../util/belt'
 import socket from '../socket'
 import { browserHistory } from 'react-router'
 import notification from '../core/notification'
-import ReCAPTCHA from 'react-grecaptcha';
+import Recaptcha from './recaptcha'
+
 
 
 class ForgotPassword extends Component {
 	constructor(props) {
 		super(props);
 		this.firstInput = null; // this is a ref
+		this.getRecaptchaResponse = null;
 		this.state = {
 			email: '',
 			emailError: '',
 			error: null,
-      recaptcha: false
 		};
 	}
 	componentDidMount(){
@@ -39,31 +40,26 @@ class ForgotPassword extends Component {
 
 	_handleLogin(e) {
 		e.preventDefault();
-		if (this.validate(this.state)) {
+		if (!this.validate(this.state)) return;
+
+		this.getRecaptchaResponse(recaptchaResponse => {
 			let {email} = this.state;
+
 			return socket
-				.send('forgotPassword', {email})
-				.then(info => {
+				.send('forgotPassword', {email, recaptchaResponse})
+				.then(() => {
 					browserHistory.push('/');
 					notification.setMessage('You\'ll receive an email with the instructions to reset your password.');
 				}, err => {
-
-					if (err === 'INVALID_EMAIL') {
-						this.setState({
-							emailError: 'This email doesn\'t exist.'
-						})
-						notification.setMessage('This email doesn\'t exist.');
-					}
-					else {
 						console.error(err);
 						notification.setMessage('Unexpected server error: ' + err, 'error');
-					}
 				})
-		}
+		});
 	}
 
 	render() {
-		const { emailError, recaptcha }  = this.state;
+		const { emailError }  = this.state;
+
 		return (
 			<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px'}}>
 				<Form horizontal onSubmit={(e) => this._handleLogin(e)}>
@@ -84,18 +80,15 @@ class ForgotPassword extends Component {
 							</InputGroup>
 						</FormGroup>
 					</Col>
-					<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '15px', marginBottom: '15px'}}>
-						<ReCAPTCHA
-							ref="recaptcha"
-							sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-							callback={ () => this.setState({ recaptcha: true }) }
-							expiredCallback={ () => console.error('recaptcha expired..') }
-						/>
-					</Col>
 
 					<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-						<button className='btn btn-success btn-lg' type="submit" disabled={ recaptcha ? false : true }>Submit</button>
+						<button className='btn btn-success btn-lg' type="submit" disabled={ false }>Submit</button>
 					</Col>
+
+					<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '15px', marginBottom: '15px'}}>
+						<Recaptcha responder={ r => this.getRecaptchaResponse = r } />
+					</Col>
+
 				</Form>
 			</div>
 		);

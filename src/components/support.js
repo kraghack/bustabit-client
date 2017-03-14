@@ -4,9 +4,10 @@ import { Link, browserHistory } from 'react-router'
 import { validateEmail } from '../util/belt'
 import socket from '../socket'
 import notification from '../core/notification'
-import ReCAPTCHA from 'react-grecaptcha';
 import userInfo from '../core/userInfo'
 import refresher from '../refresher';
+import Recaptcha from './recaptcha'
+
 
 function validateMessage(message) {
 	if (!message)
@@ -18,13 +19,13 @@ class Support extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.firstInput = null; // this is a ref
+		this.getRecaptchaResponse = null;
 		this.state = {
 			email: null, // this is null or text
 			message: '',
 			error: null,
 			emailError: null,
 			messageError: null,
-			recaptcha: null, // It is null if the recaptcha hasn't been sumbitted, otherwise it's a string.
 			submitting: false,
 			touched: false
 		};
@@ -61,9 +62,6 @@ class Support extends PureComponent {
 		return isValid;
 	}
 
-	onRecaptchaSubmit(response) {
-		this.setState({ recaptcha: response });
-	}
 
 	getEmail() {
 		return this.state.email === null ? userInfo.email : this.state.email;
@@ -71,28 +69,32 @@ class Support extends PureComponent {
 
 	handleSubmit(event){
 		event.preventDefault();
-		let { message, recaptcha } = this.state;
+		let { message } = this.state;
 
-		if (this.validate()) {
-			this.setState({ submitting: true, touched: true });
-			socket.send('sendSupport', {email: this.getEmail(), message, recaptcha})
-			.then(() => {
-					this.setState({ submitting: false});
-					browserHistory.push('/');
-					notification.setMessage(<span><span className="green-tag">Success!</span> Your message has been sent.</span>);
-				},
-				error => {
-					this.setState({ submitting: false});
-					console.error('Unexpected server error: ' + error);
-					notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {error}.</span>, 'error');
-				}
-			)
-		}
+		if (!this.validate()) return;
+
+
+		this.getRecaptchaResponse(recaptchaResponse => {
+			this.setState({ submitting: true, touched: true, });
+
+			socket.send('sendSupport', {email: this.getEmail(), message, recaptchaResponse })
+				.then(() => {
+						this.setState({ submitting: false});
+						browserHistory.push('/');
+						notification.setMessage(<span><span className="green-tag">Success!</span> Your message has been sent.</span>);
+					},
+					error => {
+						this.setState({ submitting: false});
+						console.error('Unexpected server error: ' + error);
+						notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {error}.</span>, 'error');
+					}
+				)
+		});
 
 	}
 
   render() {
-		const { message, emailError, messageError, recaptcha } = this.state;
+		const { message, emailError, messageError } = this.state;
 
 		let unameInstance = '';
 
@@ -156,22 +158,15 @@ class Support extends PureComponent {
 						/>
 					</InputGroup>
 				</FormGroup>
-				<Col xs={24} xsOffset={0} sm={20} smOffset={2} md={16} mdOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-					<ReCAPTCHA
-						ref="recaptcha"
-						sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-						callback={ (response) => this.onRecaptchaSubmit(response) }
-						expiredCallback={ () => console.error('recaptcha expired..') }
-					/>
-				</Col>
       </Col>
 			<Col xs={16} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
 				<button className='btn btn-success btn-lg' type="submit"
-								disabled={ !recaptcha || this.state.submitting }>
+								disabled={ this.state.submitting }>
 					{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Submit'}
 				</button>
 			</Col>
     </div>
+				<Recaptcha responder={ r => this.getRecaptchaResponse = r } />
 			</Form>
     )
   }

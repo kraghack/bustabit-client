@@ -10,7 +10,6 @@ class TopBar extends PureComponent {
 
 	render() {
 
-
     let navBar;
 
     if (browserSize.isMobile()) {

@@ -1,11 +1,11 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
-import ReCAPTCHA from 'react-grecaptcha';
 import { validateUname, isAValidEmailAddress, randomPassword, validatePassword } from '../util/belt'
 import socket from '../socket'
 import { browserHistory } from 'react-router'
 import userInfo from '../core/userInfo';
 import notification from '../core/notification'
+import Recaptcha from './recaptcha'
 
 
 function validateLegalAge(selection) {
@@ -15,10 +15,13 @@ function validateLegalAge(selection) {
 }
 
 
-class Register extends PureComponent {
+class Register extends Component {
   constructor(props) {
     super(props);
+    this.unmounted = false;
 		this.firstInput = null; // this is a ref
+		this.getRecaptchaResponse = null;
+
     this.state = {
       uname: '',
       email: '',
@@ -30,13 +33,17 @@ class Register extends PureComponent {
       emailError: null,
       passwordError: null,
       legalAgeError: null,
-      recaptcha: null, // It is null if the recaptcha hasn't been sumbitted, otherwise it's a string.
 			submitting: false,
 			touched: false
     };
   }
+
 	componentDidMount(){
 		this.firstInput.focus();
+	}
+
+	componentWillUnmount() {
+		this.unmounted = true;
 	}
 
   validateEmail(email) {
@@ -105,42 +112,45 @@ class Register extends PureComponent {
 
   handleSubmit(event) {
     event.preventDefault();
-    let { uname, password, email, recaptcha } = this.state;
+    let { uname, password, email } = this.state;
 
 
-    if (this.validate(this.state)) {
+    if (!this.validate(this.state)) return;
+
+    this.getRecaptchaResponse(recaptchaResponse => {
+
 			this.setState({ submitting: true, touched: true });
 
-      return socket
-        .send('register', {uname, password, email, recaptcha})
-        .then(info => {
+			socket
+				.send('register', { uname, password, email, recaptchaResponse })
+				.then(info => {
 					this.setState({ submitting: false });
-          browserHistory.push('/');
+					browserHistory.push('/');
 					userInfo.logIn(info.userInfo);
-          localStorage.setItem('secret', info.sessionId);
-					notification.setMessage (<span><span className="green-tag">Welcome {uname}! </span> You are successfully registered.</span>);
-        }, err => {
+					localStorage.setItem('secret', info.sessionId);
+					notification.setMessage(<span><span className="green-tag">Welcome {uname}! </span> You are successfully registered.</span>);
+				}, err => {
 					this.setState({ submitting: false });
-          switch (err) {
+					switch (err) {
 						case 'USERNAME_TAKEN':
 							this.setState({
 								unameError: 'This username is taken. Please choose a different one.'
 							});
 							break;
-            default:
+						default:
 							notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
-          }
-        })
-    }
+					}
+				})
+
+		});
+
+
   }
 
   generate() {
     this.setState({password: randomPassword(10)});
   }
 
-  onRecaptchaSubmit(response) {
- 		this.setState({ recaptcha: response });
-	}
 
   render() {
 
@@ -155,7 +165,7 @@ class Register extends PureComponent {
       }
     };
 
-    const { unameError, emailError, passwordError, emailSelected, legalAge, legalAgeError, recaptcha }  = this.state;
+    const { unameError, emailError, passwordError, emailSelected, legalAge, legalAgeError }  = this.state;
 
     return (
     <div style={styles.container}>
@@ -255,22 +265,17 @@ class Register extends PureComponent {
           </div>
         </Col>
         <Col xs={24} xsOffset={0} sm={20} smOffset={2} md={16} mdOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-					<ReCAPTCHA
-          ref="recaptcha"
-          sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-          callback={ (response) => this.onRecaptchaSubmit(response) }
-          expiredCallback={ () => console.error('recaptcha expired..') }
-        />
           <button type="submit"
                   className='btn btn-success btn-lg'
                   style={{marginTop: '25px'}}
-									disabled={ !recaptcha || this.state.submitting }
+									disabled={ this.state.submitting }
 					>
 						{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Submit'}
           </button>
         </Col>
       </Form>
-    </div>
+			<Recaptcha responder={ r => this.getRecaptchaResponse = r } />
+		</div>
 
     )
   }

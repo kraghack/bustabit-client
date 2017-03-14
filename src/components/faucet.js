@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import ReCAPTCHA from 'react-grecaptcha';
 import { Col, Row } from 'react-bootstrap'
 
 import socket from '../socket'
@@ -8,58 +7,56 @@ import { browserHistory } from 'react-router'
 import userInfo from '../core/userInfo'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
+import Recaptcha from './recaptcha'
 
 
 class Faucet extends PureComponent {
 
 	constructor(props) {
 		super(props);
+		this.getRecaptchaResponse = null;
 		this.state = {
 			status: 'UNCLAIMED'
 		};
 	}
 
-	onChange(val) {
+	claim() {
 
-		// Work around issue: https://github.com/evenchange4/react-grecaptcha/issues/41
-		setTimeout(() => {
-			this.setState({status: 'CLAIMING'});
-		}, 10);
+		this.getRecaptchaResponse(recaptchaResponse => {
 
-		socket.send('claimFaucet', val)
-			.then(() => {
-					console.log('faucet was claimed.');
-					this.setState({
-						status: 'CLAIMED'
-					})
-					browserHistory.push('/');
-					notification.setMessage(<span><span className="green-tag">Success!</span> Faucet claimed.</span>);
-				},
-				err => {
-					console.error('Got error claiming faucet: ', err);
-					this.setState({status: 'ERROR', error: err.message || 'unknown error'})
-					browserHistory.push('/');
-					notification.setMessage(<span><span className="red-tag">Error </span> Error claiming faucet: {err}.</span>, 'error');
-				}
-			)
+			this.setState({ status: 'CLAIMING' });
+
+			socket.send('claimFaucet', recaptchaResponse)
+				.then(() => {
+						console.log('faucet was claimed.');
+						this.setState({
+							status: 'CLAIMED'
+						});
+						browserHistory.push('/');
+						notification.setMessage(<span><span className="green-tag">Success!</span> Faucet claimed.</span>);
+					},
+					err => {
+						console.error('Got error claiming faucet: ', err);
+						this.setState({status: 'ERROR', error: err.message || 'unknown error'})
+						browserHistory.push('/');
+						notification.setMessage(<span><span
+							className="red-tag">Error </span> Error claiming faucet: {err}.</span>, 'error');
+					}
+				);
+		});
 	}
 
 
 	render() {
 
-		let recaptcha = <ReCAPTCHA
-			ref="recaptcha"
-			sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-			callback={ this.onChange.bind(this) }
-			expiredCallback={ () => console.error('recaptcha expired..') }
-		/>;
-
 
 		let faucetDisplay = (
 			<Row>
 				<Col xs={24} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-					<h4 style={{textAlign: 'center'}}>Claim faucet</h4>
-					{ recaptcha }
+					<button onClick={() => this.claim() }>
+						<h4>Claim faucet</h4>
+					</button>
+					<Recaptcha responder={ r => this.getRecaptchaResponse = r } />
 				</Col>
 			</Row>
 		);
