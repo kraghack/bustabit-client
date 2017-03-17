@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Table , Col, Row } from 'react-bootstrap'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import socket from '../../socket'
 import { formatBalance, formatCurrency } from '../../util/belt'

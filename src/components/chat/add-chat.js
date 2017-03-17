@@ -3,7 +3,7 @@ import { Form, InputGroup, Button } from 'react-bootstrap'
 import notification from '../../core/notification';
 import socket from '../../socket'
 import chat  from '../../core/chat'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher'
 import { formatBalance } from '../../util/belt'
 

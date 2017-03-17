@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
+import React, { Component, PropTypes } from 'react';
+import { FormGroup, Col, InputGroup } from 'react-bootstrap'
+import configParser from '../../config-parser'
 
 const initialScript = `var config = {
 	baseBet: { value: 100, type: 'balance' },
@@ -22,24 +23,34 @@ class Autobet extends Component {
 		this.state = {
 			name: 'Flat Better',
 			script: props.script || initialScript,
-			nameError: null
+			error: null
 		}
 	}
 
 	onNameChange(event) {
 		const name = event.target.value;
-		const nameError = validateName(name);
-		this.setState({name, nameError});
+		const error = validateName(name);
+		this.setState({name, error});
+	}
+
+	onRun() {
+		let config, script;
+		try {
+			[config, script] = configParser(this.state.script);
+		} catch (error) {
+			this.setState({error});
+			return;
+		}
+		this.props.onRun(config, script);
 	}
 
 	render() {
-		const { name, nameError, script } = this.state;
+		const { name, error, script } = this.state;
 
 		return (
 			<Col xs={24}>
-				<Form>
-					{ nameError && <strong className="red-error">{nameError}</strong>}
-					<FormGroup  className={ nameError ? 'has-error' : ''}>
+					{ error && <strong className="red-error">{error}</strong>}
+					<FormGroup  className={ error ? 'has-error' : ''}>
 						<InputGroup>
 							<InputGroup.Addon>
 								Name:
@@ -53,9 +64,7 @@ class Autobet extends Component {
 						</InputGroup>
 					</FormGroup>
 					<textarea className="form-control" rows={6} value={script} onChange={ event => this.setState({ script: event.target.value })} />
-					<Col xs={12} style={{marginTop: '15px'}}><button className="btn btn-danger">Cancel</button></Col>
-					<Col xs={12} style={{marginTop: '15px'}}><button className="btn btn-success">Save</button></Col>
-				</Form>
+					<Col xs={12} style={{marginTop: '15px'}}><button className="btn btn-success" onClick={ () => this.onRun() }>Run</button></Col>
 			</Col>
 
 		);
@@ -63,5 +72,8 @@ class Autobet extends Component {
 
 }
 
+Autobet.propTypes = {
+	onRun: PropTypes.func.isRequired
+};
 
 export default Autobet;

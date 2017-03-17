@@ -4,7 +4,7 @@ import { Link, browserHistory } from 'react-router';
 import socket from '../../socket'
 import refresher from '../../refresher';
 import NotLoggedIn from '../not-logged-in-well'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import { formatBalance } from '../../util/belt'
 import {newInputFee, newOutputFee} from '../../util/config'
 import confirm from '../../util/confirmation'

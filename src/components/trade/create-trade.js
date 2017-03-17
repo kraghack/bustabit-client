@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, FormControl, Col, FormGroup, InputGroup } from 'react-bootstrap'
 import { Link } from 'react-router'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import socket from '../../socket'
 import notification from '../../core/notification'

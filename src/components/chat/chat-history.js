@@ -3,7 +3,7 @@ import browserSize from '../../core/browser-size'
 import chat      from '../../core/chat'
 import refresher from '../../refresher'
 import PopoverMenu from './popover-menu'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 
 class ChatHistory extends Component {
 

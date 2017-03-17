@@ -105,7 +105,6 @@ import TradeFee from './components/faq/trade-fee'
 import { Router, Route, browserHistory } from 'react-router'
 
 
-
 const history = browserHistory;
 
 

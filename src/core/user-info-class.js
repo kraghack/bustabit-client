@@ -1,8 +1,4 @@
-import EventEmitter from 'events';
-import notification from './notification'
-import { formatBalance } from '../util/belt'
-import socket from '../socket';
-import chat from './chat'
+import EventEmitter from 'eventemitter3';
 
 // events, balance-changed
 
@@ -15,12 +11,108 @@ import chat from './chat'
 //  EMAIL_CHANGED
 //  UNPAID_DEPOSITS_CHANGED
 
-class UserInfo extends EventEmitter {
+export default class UserInfo extends EventEmitter {
 
-  constructor() {
+  constructor(socket) {
     super();
 		this.setMaxListeners(100);
 		this.initialize();
+
+
+		socket.on('emergencyWithdrawalAddressChanged', address => {
+			this.setEmergencyWithdrawalAddress(address);
+		});
+
+
+		socket.on('emailUpdated', email => {
+			this.setEmail(email);
+		});
+
+
+		socket.on('youSentWithdrawal', fee => {
+			this.unpaidDeposits = 0;
+			this.changeBalance(-fee);
+			this.emit('UNPAID_DEPOSITS_CHANGED');
+		});
+
+
+		socket.on('balanceChanged', (amount) => {
+			console.assert(typeof amount === 'number');
+			this.changeBalance(amount);
+		});
+
+		socket.on('fused', amount => {
+			this.fuse(amount);
+		});
+
+		socket.on('logout', () => {
+			localStorage.removeItem('secret');
+			this.logOut();
+		});
+
+		socket.on('hasMFAChanged', b => {
+			this.setHasMFA(b);
+		});
+
+		socket.on('deposit', d => {
+			console.assert(typeof d.amount === 'number');
+			this.changeBalance(d.amount);
+
+			if (d.amount > 0) {
+				this.unpaidDeposits++;
+				this.emit('UNPAID_DEPOSITS_CHANGED');
+
+				 // notification.setMessage("Your account has been credited "  + formatBalance(d.amount) + " bits from deposit " + d.txid);
+			} else if (d.amount < 0) {
+				this.unpaidDeposits--;
+				this.emit('UNPAID_DEPOSITS_CHANGED');
+			} else {
+				// TODO: much smarter notifications...
+				// notification.setMessage("incoming deposit detected")
+			}
+
+
+		});
+
+		socket.on('tipped', d => {
+			if (d.toUname === this.uname) {
+				console.assert(typeof d.amount === 'number');
+				switch(d.currency) {
+					case "BALANCE":
+						this.balance += d.amount;
+						break;
+					case "VALOR":
+						this.valor += d.amount;
+						break;
+					case "SILVER":
+						this.silver += d.amount;
+						break;
+					default:
+						break;
+				}
+				this.emit('BALANCE_CHANGED', d.amount);
+			}
+			if (d.uname === this.uname)  {
+				console.assert(typeof d.amount === 'number');
+				switch(d.currency) {
+					case "BALANCE":
+						this.balance -= (d.amount + d.fee);
+						break;
+					case "VALOR":
+						this.valor -= d.amount;
+						this.balance -= d.fee;
+						break;
+					case "SILVER":
+						this.silver -= d.amount;
+						this.balance -= d.fee;
+						break;
+					default:
+						break;
+				}
+				this.emit('BALANCE_CHANGED', d.amount);
+			}
+		});
+
   }
 
   initialize() {
@@ -150,110 +242,8 @@ class UserInfo extends EventEmitter {
 
 
 
-let userInfo = new UserInfo(); // should be const, but confuses webstorm..
 
-window._userInfo = userInfo; // for debugging:
-
-
-socket.on('balanceChanged', function(amount) {
-	console.assert(typeof amount === 'number');
-	userInfo.changeBalance(amount);
-});
-
-socket.on('fused', amount => {
-	userInfo.fuse(amount);
-});
-
-socket.on('logout', () => {
-	localStorage.removeItem('secret');
-	userInfo.logOut();
-	chat.friends.clear();
-});
-
-socket.on('hasMFAChanged', b => {
-	userInfo.setHasMFA(b);
-});
-
-socket.on('deposit', d => {
-	console.assert(typeof d.amount === 'number');
-	userInfo.changeBalance(d.amount);
-
-	if (d.amount > 0) {
-		userInfo.unpaidDeposits++;
-		userInfo.emit('UNPAID_DEPOSITS_CHANGED');
-
-		notification.setMessage("Your account has been credited "  + formatBalance(d.amount) + " bits from deposit " + d.txid);
-	} else if (d.amount < 0) {
-		userInfo.unpaidDeposits--;
-		userInfo.emit('UNPAID_DEPOSITS_CHANGED');
-	} else {
-		// TODO: much smarter notifications...
-		notification.setMessage("incoming deposit detected")
-	}
-
-
-});
-
-socket.on('tipped', d => {
-	if (d.toUname === userInfo.uname) {
-		console.assert(typeof d.amount === 'number');
-		switch(d.currency) {
-			case "BALANCE":
-				userInfo.balance += d.amount;
-				break;
-			case "VALOR":
-				userInfo.valor += d.amount;
-				break;
-			case "SILVER":
-				userInfo.silver += d.amount;
-				break;
-			default:
-				break;
-		}
-		userInfo.emit('BALANCE_CHANGED', d.amount);
-	}
-	if (d.uname === userInfo.uname)  {
-		console.assert(typeof d.amount === 'number');
-		switch(d.currency) {
-			case "BALANCE":
-				userInfo.balance -= (d.amount + d.fee);
-				break;
-			case "VALOR":
-				userInfo.valor -= d.amount;
-				userInfo.balance -= d.fee;
-				break;
-			case "SILVER":
-				userInfo.silver -= d.amount;
-				userInfo.balance -= d.fee;
-				break;
-			default:
-				break;
-		}
-		userInfo.emit('BALANCE_CHANGED', d.amount);
-	}
-});
-
-
-
-
-socket.on('emergencyWithdrawalAddressChanged', address => {
-	userInfo.setEmergencyWithdrawalAddress(address);
-});
-
-
-socket.on('emailUpdated', email => {
-	userInfo.setEmail(email);
-});
-
-
-socket.on('youSentWithdrawal', fee => {
-	userInfo.unpaidDeposits = 0;
-	userInfo.changeBalance(-fee);
-	userInfo.emit('UNPAID_DEPOSITS_CHANGED');
-});
-
-socket.on('withdrawalSent', withdrawal => {
-	notification.setMessage('Your withdrawal of ' + formatBalance(withdrawal.amount) + ' bits to ' + withdrawal.address + ' has been sent!')
-});
-
-export default userInfo;
+// TODO: ...
+// socket.on('withdrawalSent', withdrawal => {
+// 	notification.setMessage('Your withdrawal of ' + formatBalance(withdrawal.amount) + ' bits to ' + withdrawal.address + ' has been sent!')
+// });

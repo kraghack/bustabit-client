@@ -1,6 +1,6 @@
 import React, { PureComponent, PropTypes } from 'react'
 import {  Col, Row } from 'react-bootstrap'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 
 

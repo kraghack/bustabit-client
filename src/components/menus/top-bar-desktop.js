@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Link } from 'react-router';
 import { Navbar, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Balance from '../balance'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 
 

@@ -4,7 +4,7 @@ import { Col, Row } from 'react-bootstrap'
 import socket from '../socket'
 import notification from '../core/notification'
 import { browserHistory } from 'react-router'
-import userInfo from '../core/userInfo'
+import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
 import Recaptcha from './recaptcha'

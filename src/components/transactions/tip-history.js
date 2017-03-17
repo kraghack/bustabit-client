@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Col, Table, Row } from 'react-bootstrap'
 import { Link } from 'react-router';
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import socket from '../../socket'
 import { formatBalance, formatCurrency } from '../../util/belt'

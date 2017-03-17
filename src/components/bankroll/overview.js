@@ -4,7 +4,7 @@ import { formatBalance } from '../../util/belt'
 import { Link } from 'react-router'
 
 
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import engine  from '../../core/engine'
 import refresher from '../../refresher'
 

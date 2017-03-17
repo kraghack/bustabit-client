@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import userInfo from '../../core/userInfo';
+import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import SetTwoFactorAuthentication from './security-2fa-set'
 import RemoveTwoFactorAuthentication from './security-2fa-remove'

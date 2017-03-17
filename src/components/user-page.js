@@ -7,7 +7,7 @@ import TimeAgo from 'timeago-react';
 import LoadingAnimation from './loading-animation'
 import { formatBalance } from '../util/belt'
 
-import userInfo from '../core/userInfo'
+import userInfo from '../core/user-info'
 
 
 class UserPage extends PureComponent {

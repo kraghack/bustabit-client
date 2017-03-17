@@ -4,7 +4,7 @@ import { Link, browserHistory } from 'react-router'
 import { validateEmail } from '../util/belt'
 import socket from '../socket'
 import notification from '../core/notification'
-import userInfo from '../core/userInfo'
+import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import Recaptcha from './recaptcha'
 

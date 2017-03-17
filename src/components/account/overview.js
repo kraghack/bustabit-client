@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Row, Col, Table, Tooltip, OverlayTrigger } from 'react-bootstrap'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import { formatBalance } from '../../util/belt';
 import { Link } from 'react-router'

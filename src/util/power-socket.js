@@ -1,7 +1,7 @@
 // power-socket is a simple library that somewhat emulates socket.io but
 // purely over websockets
 
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 import { generateUuid } from '../util/belt'
 import work from 'work-token/async';
 

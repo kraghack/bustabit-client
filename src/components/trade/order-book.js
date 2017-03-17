@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { Table, Col, FormGroup, Radio, Row } from 'react-bootstrap'
 import { Link } from 'react-router'
 import OrderBookResults from './order-book-results'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 
 class OrderBook extends PureComponent {

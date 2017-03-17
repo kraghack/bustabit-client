@@ -8,7 +8,7 @@ import notification from '../core/notification'
 import socket from '../socket'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
-import userInfo from '../core/userInfo'
+import userInfo from '../core/user-info'
 
 
 function validateAmount(amount) {

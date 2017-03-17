@@ -5,7 +5,7 @@ import socket from '../../socket'
 import refresher from '../../refresher'
 import notification from '../../core/notification'
 import engine from '../../core/engine'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import { formatBalance, isAmountInvalid } from '../../util/belt'
 import confirm from '../../util/confirmation'
 import { minDivest } from '../../util/config'
@@ -72,8 +72,17 @@ class RemoveFromBankroll extends PureComponent {
 								if (this.unmounted) return;
 								this.setState({ blocking: false, submitting: false });
 
-
 								browserHistory.push('/');
+
+								// TODO NOTIFICATION
+							/*
+								let extraMessage = '';
+								if (divested.silver > 0) {
+									extraMessage = '(' + formatBalance(divested.silver) + ' silver, as it was profit)';
+								}
+
+								notification.setMessage('You have removed '+ formatBalance(total) + ' bits from the bankroll ' + extraMessage);
+								*/
 							},
 							err => {
 								if (this.unmounted) return;

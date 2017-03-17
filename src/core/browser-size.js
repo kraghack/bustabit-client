@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 
 // events:
 //  WIDTH_CHANGED:  Window width changed

@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 
 // events:
 //  CHANGE:  Whenever something changes.

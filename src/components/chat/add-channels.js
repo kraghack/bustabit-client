@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import  { Tooltip, OverlayTrigger } from 'react-bootstrap'
 import { chatChannels } from '../../util/belt'
 import chat from '../../core/chat'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher'
 import { Link } from 'react-router'
 

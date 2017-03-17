@@ -3,7 +3,7 @@ import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { validateUname, isAValidEmailAddress, randomPassword, validatePassword } from '../util/belt'
 import socket from '../socket'
 import { browserHistory } from 'react-router'
-import userInfo from '../core/userInfo';
+import userInfo from '../core/user-info';
 import notification from '../core/notification'
 import Recaptcha from './recaptcha'
 

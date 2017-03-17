@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react'
 import chat from '../../core/chat'
-import { chatChannelsFlag, getAvatarColor } from '../../util/belt'
+import { getAvatarColor } from '../../util/belt'
+import chatFlags from '../../util/chat-flags'
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import refresher from '../../refresher'
 import browserSize from '../../core/browser-size'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 
 
 
@@ -32,7 +33,7 @@ class ChatChannelSidebar extends PureComponent {
 						<div className={ publicChannelsOpen ? "channels-show" : "channels-collapse"}>
         {
 					chat.openChannels().map(channel => {
-						const flag = chatChannelsFlag[channel];
+						const flag = chatFlags[channel];
 
 						const style = channel === chat.focused && chat.focusKind === 'CHANNEL' ? {border: "5px solid blue"} : {};
 

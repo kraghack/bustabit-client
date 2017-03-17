@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { Table, Col, Row } from 'react-bootstrap'
 import engine   from '../../core/engine'
 import refresher from '../../refresher'
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import socket from '../../socket'
 import { formatBalance } from '../../util/belt'
 

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { Row, Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import socket from '../../socket'
 import { randomPassword, validatePassword } from '../../util/belt'
-import userInfo from '../../core/userInfo';
+import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
 import { browserHistory } from 'react-router'

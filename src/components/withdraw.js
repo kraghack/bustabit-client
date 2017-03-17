@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col, Form, FormGroup, InputGroup } from 'react-bootstrap'
 import { Link, browserHistory } from 'react-router'
-import userInfo from '../core/userInfo'
+import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
 import socket from '../socket'

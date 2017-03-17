@@ -1,6 +1,6 @@
 import React, { PureComponent, PropTypes } from 'react'
 import Tab from '../tab';
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import NotLoggedIn from '../not-logged-in-well'
 

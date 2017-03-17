@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import userInfo from '../../core/userInfo'
+import userInfo from '../../core/user-info'
 import browserSize from '../../core/browser-size'
 import refresher from '../../refresher';
 import TopBarMobile from './top-bar-mobile';
