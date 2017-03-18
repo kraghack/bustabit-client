@@ -17,7 +17,6 @@ import {  objectEntries } from '../util/belt'
 export default class Engine extends EventEmitter {
 	constructor(userInfo, socket) {
 		super();
-		this.setMaxListeners(100);
 		this.userInfo = userInfo;
 		this.socket = socket;
 
@@ -265,19 +264,6 @@ export default class Engine extends EventEmitter {
 
 		});
 
-
-
-
-		socket.on('connect', ([loggedIn, engineInfo,]) => {
-
-			if (loggedIn) {
-				userInfo.logIn(loggedIn.userInfo);
-			}
-
-			this.setInfo(engineInfo);
-
-		});
-
 	}
 
 	_getElapsedTime() {
@@ -374,23 +360,31 @@ export default class Engine extends EventEmitter {
 		return this.invested - this.divested - this.bankroll;
 	}
 
-	setInfo(info) {
-		this.gameId = info.gameId;
-		this.gameState = info.gameState;
-		this.bankroll = info.bankroll;
-		this.invested = info.invested;
-		this.divested = info.divested;
-		this.playing = new Map(objectEntries(info.playing));
-		this.cashOuts = info.cashOuts;
-		this.history = info.history;
+	initialize(info) {
+		if (!(info.playing instanceof Map)) {
+			info.playing = new Map(objectEntries(info.playing));
+		}
 
-		console.assert(Number.isFinite(info.elapsed));
-		this.startTime = Date.now() - info.elapsed;
+		Object.assign(this, info);
+		if (this.elapsed) {
+			this.startTime = Date.now() - this.elapsed;
+			delete this.elapsed;
+		}
 
 		this.emit('GAME_STATE_CHANGED');
 		this.emit('BANKROLL_CHANGED');
 		this.emit('PLAYERS_CHANGED');
 		this.emit('BET_STATUS_CHANGED');
 		this.emit('HISTORY_CHANGED');
+	}
+
+	getData() {
+		let data = {};
+		for (const key in this){
+			if (this.hasOwnProperty(key) && !key.startsWith("_")) {
+				data[key] = this[key];
+			}
+		}
+		return data;
 	}
 }

@@ -93,7 +93,7 @@ class LoginForm extends PureComponent {
       return socket
         .send('login', {uname, password, passcode})
         .then(info => {
-          userInfo.logIn(info.userInfo);
+          userInfo.initialize(info.userInfo);
 					this.setState({ submitting: false });
           browserHistory.push('/');
           localStorage.setItem('secret', info.sessionId);

@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "postinstall": "npm run sass",
+    "postinstall": "npm run sass ; npm run build-iframe",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "sass": "node-sass --precision 8 src/sass/app.scss src/sass/app.css",
@@ -34,7 +34,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "build-iframe": "webpack iframe"
+    "build-iframe": "cd iframe && webpack"
   },
   "dependencies": {
     "eventemitter3": "^2.0.2"

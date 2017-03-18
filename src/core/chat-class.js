@@ -11,7 +11,6 @@ export default class Chat extends EventEmitter {
 
   constructor(socket) {
 		super();
-		this.setMaxListeners(100);
 		this.socket = socket;
 
 
@@ -32,10 +31,6 @@ export default class Chat extends EventEmitter {
 		// map of friend uname to  { unread: int, history: { message, uname, created } }
 		this.friends = new Map([]);
 
-
-		socket.on('connect', ([,, friendsInfo]) => {
-			this.initializeFriends(friendsInfo);
-		});
 
 		socket.on('friendRemoved', uname => {
 			this.friends.delete(uname);
@@ -97,10 +92,8 @@ export default class Chat extends EventEmitter {
 	}
 
 
-	initializeFriends(statusObj) {
-
+	initialize(statusObj) {
 		const entries = objectEntries(statusObj);
-
 
 		for (const [uname, { online, history}] of entries) {
 			for (const message of history) {

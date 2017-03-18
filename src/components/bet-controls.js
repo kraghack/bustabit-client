@@ -16,15 +16,6 @@ class BetControls extends PureComponent {
 		}
 	}
 
-	handleSelect(selectedKey) {
-		if (selectedKey === 1) {
-			this.setState({tab: 'manual'})
-		} else {
-			this.setState({tab: 'auto'})
-		}
-		alert('selected ' + selectedKey);
-	}
-
   render() {
 
 		const {tab} = this.state;

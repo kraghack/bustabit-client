@@ -16,7 +16,7 @@ export default class UserInfo extends EventEmitter {
   constructor(socket) {
     super();
 		this.setMaxListeners(100);
-		this.initialize();
+		this.clear();
 
 
 		socket.on('emergencyWithdrawalAddressChanged', address => {
@@ -115,7 +115,7 @@ export default class UserInfo extends EventEmitter {
 
   }
 
-  initialize() {
+  clear() {
 		this.balance = 0.0;
 		this.bets = 0;
 		this.created = new Date();
@@ -145,7 +145,7 @@ export default class UserInfo extends EventEmitter {
     return !!this.uname;
   }
 
-  logIn(info) {
+  initialize(info) {
 		console.assert(typeof info === 'object');
 		console.assert(typeof info.uname === 'string');
 		console.assert(typeof info.created === 'string');
@@ -164,7 +164,7 @@ export default class UserInfo extends EventEmitter {
 	}
 
 	logOut() {
-		this.initialize();
+		this.clear();
 
 		// all events should be emitted
 		this.emit('UNAME_CHANGED');

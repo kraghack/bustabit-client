@@ -126,7 +126,7 @@ class Register extends Component {
 				.then(info => {
 					this.setState({ submitting: false });
 					browserHistory.push('/');
-					userInfo.logIn(info.userInfo);
+					userInfo.initialize(info.userInfo);
 					localStorage.setItem('secret', info.sessionId);
 					notification.setMessage(<span><span className="green-tag">Welcome {uname}! </span> You are successfully registered.</span>);
 				}, err => {
