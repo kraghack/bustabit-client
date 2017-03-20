@@ -15,7 +15,6 @@ export default class UserInfo extends EventEmitter {
 
   constructor(socket) {
     super();
-		this.setMaxListeners(100);
 		this.clear();
 
 
@@ -148,9 +147,10 @@ export default class UserInfo extends EventEmitter {
   initialize(info) {
 		console.assert(typeof info === 'object');
 		console.assert(typeof info.uname === 'string');
-		console.assert(typeof info.created === 'string');
 
-		info.created = new Date(info.created);
+		if (typeof info.created === 'string')
+			info.created = new Date(info.created);
+
 
 		Object.assign(this, info);
 
@@ -236,6 +236,16 @@ export default class UserInfo extends EventEmitter {
 	setEmail(email) {
 		this.email = email;
 		this.emit('EMAIL_CHANGED')
+	}
+
+	getState() {
+		let data = {};
+		for (const key in this){
+			if (this.hasOwnProperty(key) && !key.startsWith("_")) {
+				data[key] = this[key];
+			}
+		}
+		return data;
 	}
 
 }

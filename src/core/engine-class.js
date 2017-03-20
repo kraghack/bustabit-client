@@ -17,8 +17,8 @@ import {  objectEntries } from '../util/belt'
 export default class Engine extends EventEmitter {
 	constructor(userInfo, socket) {
 		super();
-		this.userInfo = userInfo;
-		this.socket = socket;
+		this._userInfo = userInfo;
+		this._socket = socket;
 
 
 		this.bust = 0;
@@ -297,10 +297,10 @@ export default class Engine extends EventEmitter {
 
 	/** If the user is currently playing return and object with the status else return undefined **/
 	getCurrentBet() {
-		if (!this.userInfo.uname)
+		if (!this._userInfo.uname)
 			return undefined;
 
-		return this.playing.get(this.userInfo.uname);
+		return this.playing.get(this._userInfo.uname);
 	}
 
 	/** True if you are playing and haven't cashed out, it returns true on game_crash also, it clears until game_starting **/
@@ -310,7 +310,7 @@ export default class Engine extends EventEmitter {
 
 	// If the game is starting and we're going to be in it
 	isEnteringGame() {
-		return this.gameState === 'GAME_STARTING' && this.playing.has(this.userInfo.uname);
+		return this.gameState === 'GAME_STARTING' && this.playing.has(this._userInfo.uname);
 	}
 
 
@@ -325,7 +325,7 @@ export default class Engine extends EventEmitter {
 			this.placingBet = true;
 
 			this.emit('BET_STATUS_CHANGED');
-			return this.socket.send('bet', { wager, payout });
+			return this._socket.send('bet', { wager, payout });
 		}
 
 		return new Promise((resolve, reject) => {
@@ -352,7 +352,7 @@ export default class Engine extends EventEmitter {
 		console.assert(this.currentlyPlaying());
 
 		this.cashingOut = true;
-		this.socket.send('cashOut', this.getCurrentPayout());
+		this._socket.send('cashOut', this.getCurrentPayout());
 		this.emit('BET_STATUS_CHANGED');
 	}
 
@@ -378,7 +378,7 @@ export default class Engine extends EventEmitter {
 		this.emit('HISTORY_CHANGED');
 	}
 
-	getData() {
+	getState() {
 		let data = {};
 		for (const key in this){
 			if (this.hasOwnProperty(key) && !key.startsWith("_")) {

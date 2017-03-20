@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 
 import { objectEntries } from '../../util/belt';
 import socket from '../../socket'
+import chat from '../../core/chat'
+import userInfo from '../../core/user-info'
+import engine from '../../core/engine'
 
 
 class Run extends Component {
@@ -78,8 +81,15 @@ class Run extends Component {
 		const config = this.getVals();
 
 		const script = "var config = " + JSON.stringify(config) + ";\n" + this.props.runnableScript;
+		const chatState = chat.getState();
+		const userInfoState = userInfo.getState();
+		const engineState = engine.getState();
 
-		this.iframeRef.contentWindow.postMessage(script, '*');
+		let msg = { script, chatState, userInfoState, engineState };
+		console.log('sending: ', msg);
+
+		this.iframeRef.contentWindow.postMessage(msg, '*');
+
 
 		// holy shit, crazy hack
 		console.assert(this.listeningToSocket.length === 0);

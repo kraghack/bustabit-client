@@ -11,7 +11,7 @@ export default class Chat extends EventEmitter {
 
   constructor(socket) {
 		super();
-		this.socket = socket;
+		this._socket = socket;
 
 
 		this.showAddChannels = false;
@@ -86,14 +86,22 @@ export default class Chat extends EventEmitter {
 		socket.on('logout', () => {
 			this.friends.clear();
 		});
-
-		socket.send('joinChannels', this.openChannels())
-		.then(history => this.joinedChannels(history));
 	}
 
+	initialize(info) {
+		Object.assign(this, info);
 
-	initialize(statusObj) {
+		// all events should be emitted
+		this.emit('TABS_CHANGED');
+		this.emit('FOCUSED_HISTORY_CHANGED');
+		this.emit('SHOW_ADD_CHANNELS_CHANGED');
+		this.emit('FRIENDS_CHANGED');
+	}
+
+	setFriends(statusObj) {
 		const entries = objectEntries(statusObj);
+
+		console.log('chat data: ', statusObj);
 
 		for (const [uname, { online, history}] of entries) {
 			for (const message of history) {
@@ -161,7 +169,7 @@ export default class Chat extends EventEmitter {
 		this.emit('SHOW_ADD_CHANNELS_CHANGED');
 
 
-		this.socket.send('joinChannels', [channel])
+		this._socket.send('joinChannels', [channel])
 			.then(history => this.joinedChannels(history));
 	}
 
@@ -176,7 +184,17 @@ export default class Chat extends EventEmitter {
 
 		this.emit('TABS_CHANGED');
 
-		this.socket.send('leaveChannel', channel)
+		this._socket.send('leaveChannel', channel)
+	}
+
+	getState() {
+		let data = {};
+		for (const key in this){
+			if (this.hasOwnProperty(key) && !key.startsWith("_")) {
+				data[key] = this[key];
+			}
+		}
+		return data;
 	}
 
 }

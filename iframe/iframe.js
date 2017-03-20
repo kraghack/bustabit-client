@@ -1,5 +1,7 @@
 import UserInfo from '../src/core/user-info-class'
 import Engine from '../src/core/engine-class'
+import Chat from '../src/core/chat-class'
+
 import EventEmitter from 'eventemitter3';
 
 
@@ -16,6 +18,7 @@ if (!sandboxed) {
 
 let fakeSocket = new EventEmitter();
 
+let chat = new Chat(fakeSocket);
 let userInfo = new UserInfo(fakeSocket);
 let engine = new Engine(userInfo, fakeSocket);
 
@@ -32,7 +35,14 @@ window.addEventListener('message', function (e) {
 
 	if (firstMessage) {
 		firstMessage = false;
-		establish(e.data);
+		const { script, engineState, chatState, userInfoState } = e.data;
+
+		chat.initialize(chatState);
+		userInfo.initialize(userInfoState);
+		engine.initialize(engineState);
+
+		console.log('should run script: ', script);
+
 	} else {
 		let [k,v] = e.data;
 		console.log('iframe got event:', k, v);
@@ -52,9 +62,3 @@ window.addEventListener('message', function (e) {
 	// console.log('Trying to post: ', result);
 	// mainWindow.postMessage(result, e.origin);
 });
-
-function establish(script) {
-	console.log('Running script: ', script);
-}
-
-console.log('Wowzer!');
