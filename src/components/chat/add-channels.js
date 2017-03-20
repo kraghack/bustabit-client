@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import  { Tooltip, OverlayTrigger } from 'react-bootstrap'
-import { chatChannels } from '../../util/belt'
+import chatFlags from '../../util/chat-flags'
+import { objectEntries } from '../../util/belt'
 import chat from '../../core/chat'
 import userInfo from '../../core/user-info'
 import refresher from '../../refresher'
@@ -23,20 +24,19 @@ class ChatChannels extends Component {
     return (
       <div className="chat-rooms-container col-sm-10">
 
-          {chatChannels.map(function(channel) {
+          { objectEntries(chatFlags).map(([name, flag]) => {
             let tooltip = (
-              <Tooltip id="tooltip">{channel.name}</Tooltip>
+              <Tooltip id="tooltip">{name}</Tooltip>
             );
 
-
             return (
-              <OverlayTrigger placement="bottom" overlay={tooltip} key={channel.name}>
+              <OverlayTrigger placement="bottom" overlay={tooltip} key={name}>
                   <img
-                    key={channel.name}
-                    src={channel.url}
+                    key={name}
+                    src={flag}
                     style={{ width: '32px' }}
-										onClick={ () => chat.openChannel(channel.name) }
-                    alt={channel.name}
+										onClick={ () => chat.openChannel(name) }
+                    alt={name}
                   />
               </OverlayTrigger>
             );
