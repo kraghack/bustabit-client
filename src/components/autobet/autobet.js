@@ -17,8 +17,12 @@ class Autobet extends Component {
 	};
 	
 	engine.on('gameStarting', function() {
-		engine.bet(config.baseBet.value, config.autoCashOut.value)
-	})`;
+	   log('Yo dawg! The game is starting!');
+		 engine.bet(config.baseBet.value, config.autoCashOut.value)
+	})
+
+  log('get ready to roll!');
+  `;
 
 
 

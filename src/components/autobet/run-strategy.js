@@ -14,7 +14,9 @@ class Run extends Component {
 		this.iframeRef = null;
 		this.listeningToSocket = []; // list of events
 		this.messageListener = this.messageListener.bind(this);
-		this.state = {};
+		this.state = {
+			logs: []
+		};
 	}
 
 	componentDidMount() {
@@ -28,7 +30,7 @@ class Run extends Component {
 
 
 		for (const [eventName, f] of this.listeningToSocket) {
-			socket.removeEventListener(eventName, f);
+			socket.removeListener(eventName, f);
 		}
 		this.listeningToSocket = [];
 	}
@@ -101,6 +103,8 @@ class Run extends Component {
 			socket.on(eventName, f);
 			this.listeningToSocket.push([eventName, f]);
 		}
+
+
 	}
 
 	sendToIframe() {
@@ -111,10 +115,12 @@ class Run extends Component {
 		return <div>
 			{ this.interpretConfig() }
 			<button onClick={ () => this.run() } className="btn btn-primary">Run!</button>
-			<iframe
-				ref={ (ref) => this.iframeRef = ref }
-				src="/iframe.html" sandbox="allow-scripts"
+			<iframe style={{ width: 0, height: 0, border: 0, visibility: 'none' }}
+							ref={ (ref) => this.iframeRef = ref }
+							src="/iframe.html" sandbox="allow-scripts"
 			></iframe>
+			<br/>
+			<textarea className="form-control" value={ this.state.logs.join('\n') } />
 		</div>
 	}
 

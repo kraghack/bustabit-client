@@ -18,11 +18,16 @@ if (!sandboxed) {
 
 let fakeSocket = new EventEmitter();
 
-let chat = new Chat(fakeSocket);
-let userInfo = new UserInfo(fakeSocket);
-let engine = new Engine(userInfo, fakeSocket);
+const chat = new Chat(fakeSocket);
+window._chat = chat; // help with debugging
+const userInfo = new UserInfo(fakeSocket);
+window._userInfo = userInfo; // help with debugging
+const engine = new Engine(userInfo, fakeSocket);
+window._engine = engine; // help with debugging
 
 let firstMessage = true;
+
+
 
 
 window.addEventListener('message', function (e) {
@@ -31,6 +36,10 @@ window.addEventListener('message', function (e) {
 		return;
 
 	let mainWindow = e.source;
+
+	function log(message) {
+		mainWindow.postMessage(['log', message], e.origin);
+	}
 
 
 	if (firstMessage) {
@@ -41,11 +50,12 @@ window.addEventListener('message', function (e) {
 		userInfo.initialize(userInfoState);
 		engine.initialize(engineState);
 
-		console.log('should run script: ', script);
+		log('script starting'); // main reason is to get rid of dead code elimination lol
+
+		eval(script);
 
 	} else {
 		let [k,v] = e.data;
-		console.log('iframe got event:', k, v);
 		fakeSocket.emit(k, v);
 	}
 
