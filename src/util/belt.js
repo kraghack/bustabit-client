@@ -135,3 +135,13 @@ export function objectEntries(obj) {
 	}
 	return entries;
 }
+
+// HELPERS
+
+
+// Converts timestamp string into HH:MM format for chat
+export function simpleDate (date) {
+	const hh = date.getHours().toString();
+	const mm = date.getMinutes().toString();
+	return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2);
+}

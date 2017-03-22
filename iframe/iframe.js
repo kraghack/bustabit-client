@@ -15,6 +15,14 @@ if (!sandboxed) {
 	throw new Error('Aborting script, it appears we are not running in a sandbox');
 }
 
+if (!window.parent) {
+	throw new Error('wtf no parrent?!');
+}
+
+function parentPost(k, v) {
+	window.parent.postMessage([k, v], (window.location.protocol + "//" + window.location.host));
+}
+
 
 let fakeSocket = new EventEmitter();
 
@@ -28,19 +36,16 @@ window._engine = engine; // help with debugging
 let firstMessage = true;
 
 
-
-
 window.addEventListener('message', function (e) {
-	console.log('event origin: ', e.origin);
 	if (e.origin !== (window.location.protocol + "//" + window.location.host))
 		return;
 
-	let mainWindow = e.source;
 
 	function log(message) {
-		mainWindow.postMessage(['log', message], e.origin);
+		parentPost('log', message);
 	}
 
+	console.log('got message: ', e.data);
 
 	if (firstMessage) {
 		firstMessage = false;
@@ -50,11 +55,12 @@ window.addEventListener('message', function (e) {
 		userInfo.initialize(userInfoState);
 		engine.initialize(engineState);
 
-		log('script starting'); // main reason is to get rid of dead code elimination lol
+		log('script starting'); // main reason is to stop log getting dead-code-eliminated lol
 
 		eval(script);
 
 	} else {
+		console.log('data: ', e.data);
 		let [k,v] = e.data;
 		fakeSocket.emit(k, v);
 	}
@@ -72,3 +78,9 @@ window.addEventListener('message', function (e) {
 	// console.log('Trying to post: ', result);
 	// mainWindow.postMessage(result, e.origin);
 });
+
+parentPost('ready', new Date());
+
+
+
+

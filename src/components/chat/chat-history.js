@@ -4,6 +4,7 @@ import chat      from '../../core/chat'
 import refresher from '../../refresher'
 import PopoverMenu from './popover-menu'
 import userInfo from '../../core/user-info'
+import { simpleDate } from '../../util/belt'
 
 class ChatHistory extends Component {
 
@@ -94,17 +95,3 @@ export default refresher(ChatHistory,
 	[chat, 'FOCUSED_HISTORY_CHANGED'],
 	[userInfo, 'UNAME_CHANGED']
 )
-
-
-// HELPERS
-
-
-// String -> String
-//
-// Converts timestamp string into HH:MM format for chat
-function simpleDate (date) {
-	const hh = date.getHours().toString();
-	const mm = date.getMinutes().toString();
-	return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2);
-}
-

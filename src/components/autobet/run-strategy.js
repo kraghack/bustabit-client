@@ -5,9 +5,11 @@ import socket from '../../socket'
 import chat from '../../core/chat'
 import userInfo from '../../core/user-info'
 import engine from '../../core/engine'
+import { simpleDate } from '../../util/belt'
 
 
-class Run extends Component {
+
+class RunStrategy extends Component {
 
 	constructor(props) {
 		super(props);
@@ -15,7 +17,8 @@ class Run extends Component {
 		this.listeningToSocket = []; // list of events
 		this.messageListener = this.messageListener.bind(this);
 		this.state = {
-			logs: []
+			logs: [],
+			running: false,
 		};
 	}
 
@@ -28,11 +31,7 @@ class Run extends Component {
 		console.log('Remove message listener');
 		window.removeEventListener('message', this.messageListener);
 
-
-		for (const [eventName, f] of this.listeningToSocket) {
-			socket.removeListener(eventName, f);
-		}
-		this.listeningToSocket = [];
+		this.doStop()
 	}
 
 
@@ -74,12 +73,37 @@ class Run extends Component {
 	}
 
 	messageListener(e) {
-		if (e.source !== this.iframeRef.contentWindow) return;
+		if (!this.iframeRef || e.source !== this.iframeRef.contentWindow) return;
+
+		const [key, value] = e.data;
+
+		if (key === 'log') {
+			this.setState({
+				logs: this.state.logs.concat([ simpleDate(new Date()) + ': ' + value])
+			});
+		} else if (key === 'ready') {
+			console.log('iframe is ready: ', value);
+			this.doRun();
+		} else {
+			console.warn('Unknown event: ', key, value);
+		}
 
 		console.log('Got message: ', e.data);
 	}
 
-	run() {
+	doStop() {
+		for (const [eventName, f] of this.listeningToSocket) {
+			socket.removeListener(eventName, f);
+		}
+		this.listeningToSocket = [];
+	}
+
+	stop() {
+		this.doStop();
+		this.setState({ running: false });
+	}
+
+	doRun() {
 		const config = this.getVals();
 
 		const script = "var config = " + JSON.stringify(config) + ";\n" + this.props.runnableScript;
@@ -88,7 +112,8 @@ class Run extends Component {
 		const engineState = engine.getState();
 
 		let msg = { script, chatState, userInfoState, engineState };
-		console.log('sending: ', msg);
+
+		console.log('posting: ', msg);
 
 		this.iframeRef.contentWindow.postMessage(msg, '*');
 
@@ -103,22 +128,35 @@ class Run extends Component {
 			socket.on(eventName, f);
 			this.listeningToSocket.push([eventName, f]);
 		}
-
-
 	}
 
-	sendToIframe() {
-
+	run() {
+		this.setState({
+			running: true,
+			logs: []
+		});
 	}
+
 
 	render() {
+		const { running } = this.state;
+
 		return <div>
 			{ this.interpretConfig() }
-			<button onClick={ () => this.run() } className="btn btn-primary">Run!</button>
-			<iframe style={{ width: 0, height: 0, border: 0, visibility: 'none' }}
-							ref={ (ref) => this.iframeRef = ref }
-							src="/iframe.html" sandbox="allow-scripts"
-			></iframe>
+			{
+				!running && <button onClick={ () => this.run() } className="btn btn-primary">Run!</button>
+			}
+			{
+				running && <div>
+					<button onClick={ () => this.stop() } className="btn btn-danger">Stop!</button>
+					<iframe style={{ width: 0, height: 0, border: 0, visibility: 'none' }}
+									ref={ (ref) => this.iframeRef = ref }
+									src="/iframe.html" sandbox="allow-scripts"
+					></iframe>
+				</div>
+			}
+
+
 			<br/>
 			<textarea className="form-control" value={ this.state.logs.join('\n') } />
 		</div>
@@ -126,10 +164,10 @@ class Run extends Component {
 
 }
 
-Run.propTypes = {
+RunStrategy.propTypes = {
 	config: PropTypes.object.isRequired,
 	runnableScript:  PropTypes.string.isRequired,
 };
 
 
-export default Run;
+export default RunStrategy;
