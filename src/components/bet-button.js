@@ -21,7 +21,7 @@ class BetButton extends Component {
 		this.setState({animation: true});
 
 		if (engine.gameState === 'GAME_IN_PROGRESS' && engine.currentlyPlaying()) {
-			engine.sendCashOut();
+			engine.cashOut();
 		} else if (engine.isBetQueued()) {
 			engine.cancelQueuedBet();
 		} else {

@@ -112,7 +112,7 @@ class RunStrategy extends Component {
 		} else if (key === 'bet') {
 
 			if (!Array.isArray(value) || value.length !== 2) {
-				console.warn('malformed bet a proper array');
+				console.warn('malformed bet, not a proper array');
 				return;
 			}
 
@@ -136,10 +136,22 @@ class RunStrategy extends Component {
 			);
 
 		} else if (key === 'cashOut') {
-			console.warn('Unknown event: ', key, value);
+
+			if (!Array.isArray(value) || value.length !== 2) {
+				console.warn('malformed cashout, not a proper array');
+				return;
+			}
+
+			const responseName = value[0];
+
+			engine.cashOut().then(
+				x   => this.iframeRef.contentWindow.postMessage([responseName, [0, x]], '*'),
+				err => this.iframeRef.contentWindow.postMessage([responseName, [1, err]], '*'),
+			);
+		} else {
+			console.log('Got unknown: ', e.data);
 		}
 
-		console.log('Got unknown: ', e.data);
 	}
 
 	doStop() {

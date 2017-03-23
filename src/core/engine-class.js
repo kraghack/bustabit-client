@@ -347,7 +347,7 @@ export default class Engine extends EventEmitter {
 		this.emit('BET_STATUS_CHANGED');
 	}
 
-	sendCashOut() {
+	cashOut() {
 		console.assert(this.gameState === 'GAME_IN_PROGRESS');
 		console.assert(this.currentlyPlaying());
 

@@ -36,12 +36,9 @@ fakeSocket.send = function(k, v) {
 	});
 };
 
-const chat = new Chat(fakeSocket);
-window._chat = chat; // help with debugging
-const userInfo = new UserInfo(fakeSocket);
-window._userInfo = userInfo; // help with debugging
-const engine = new Engine(userInfo, fakeSocket);
-window._engine = engine; // help with debugging
+window.chat = new Chat(fakeSocket);
+window.userInfo = new UserInfo(fakeSocket);
+window.engine = new Engine(userInfo, fakeSocket);
 
 let firstMessage = true;
 
@@ -83,6 +80,7 @@ window.addEventListener('message', function (e) {
 			console.log('Got promisey response: ', v);
 			let [index, obj] = v;
 			promises[k][index](obj);
+			delete promises[k];
 			return;
 		}
 
