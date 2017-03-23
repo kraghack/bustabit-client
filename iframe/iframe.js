@@ -24,7 +24,17 @@ function parentPost(k, v) {
 }
 
 
-let fakeSocket = new EventEmitter();
+var fakeSocket = new EventEmitter();
+var promises = {}; // eventName to [resolve, reject]
+var eventNumber = 1;
+
+fakeSocket.send = function(k, v) {
+	var eventName = ':' + eventNumber++;
+	parentPost(k, [eventName, v]);
+	return new Promise(function(resolve, reject) {
+		promises[eventName] = [resolve, reject];
+	});
+};
 
 const chat = new Chat(fakeSocket);
 window._chat = chat; // help with debugging
@@ -41,7 +51,14 @@ window.addEventListener('message', function (e) {
 		return;
 
 
-	function log(message) {
+	function log() {
+		var message = '';
+		for (var i = 0; i < arguments.length; ++i) {
+			message += String(arguments[i]);
+			if (i != arguments.length - 1) {
+				message += '\t';
+			}
+		}
 		parentPost('log', message);
 	}
 
@@ -60,8 +77,15 @@ window.addEventListener('message', function (e) {
 		eval(script);
 
 	} else {
-		console.log('data: ', e.data);
 		let [k,v] = e.data;
+
+		if (promises.hasOwnProperty(k)) {
+			console.log('Got promisey response: ', v);
+			let [index, obj] = v;
+			promises[k][index](obj);
+			return;
+		}
+
 		fakeSocket.emit(k, v);
 	}
 

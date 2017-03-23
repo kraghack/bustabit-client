@@ -73,7 +73,7 @@ export default class Engine extends EventEmitter {
 		 * If a number, how much to bet next round
 		 * Saves the queued bet if the game is not 'game_starting', cleared in 'bet_placed' by us and 'game_started' and 'cancel bet'
 		 */
-		this.next = null; // { wager, payout, resolve, reject};
+		this.next = null; // { wager, payout, isAuto, resolve, reject};
 
 
 		/** Store the id of the timer to check for lag **/
@@ -115,10 +115,10 @@ export default class Engine extends EventEmitter {
 
 			// Every time a game is starting, we check if there's a queued bet
 			if (this.next) {
-				const { wager, payout, resolve, reject } = this.next;
+				const { wager, payout, isAuto, resolve, reject } = this.next;
 
 				this.next = null;
-				socket.send('bet', { wager, payout }).then(resolve, reject);
+				socket.send('bet', { wager, payout, isAuto }).then(resolve, reject);
 			}
 
 			this.emit('BANKROLL_CHANGED');
@@ -314,7 +314,7 @@ export default class Engine extends EventEmitter {
 	}
 
 
-	bet(wager, payout) {
+	bet(wager, payout, isAuto) {
 		// TODO: if we're a few miliseconds before GAME_STARTED, perhaps we should queue instead of failing?
 		if (this.gameState === 'GAME_STARTING') {
 			if (this.placingBet || this.wager) {
@@ -325,12 +325,12 @@ export default class Engine extends EventEmitter {
 			this.placingBet = true;
 
 			this.emit('BET_STATUS_CHANGED');
-			return this._socket.send('bet', { wager, payout });
+			return this._socket.send('bet', { wager, payout, isAuto });
 		}
 
 		return new Promise((resolve, reject) => {
 
-			this.next = { wager, payout, resolve, reject };
+			this.next = { wager, payout, isAuto, resolve, reject };
 			this.emit('BET_STATUS_CHANGED');
 
 		});

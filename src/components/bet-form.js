@@ -32,7 +32,7 @@ class BetForm extends Component {
 		wager = Number.parseInt(wager,10) * 100;
 		payout = Number.parseFloat(payout);
 
-		engine.bet(wager, payout).catch(
+		engine.bet(wager, payout, false).catch(
 			(error) => this.setState({ error })
 		);
 	}

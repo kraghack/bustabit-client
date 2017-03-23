@@ -16,12 +16,9 @@ class Autobet extends Component {
 		autoCashOut: { value: 1, type: 'multiplier' },
 	};
 	
-	engine.on('gameStarting', function() {
-	   log('Yo dawg! The game is starting!');
-		 engine.bet(config.baseBet.value, config.autoCashOut.value)
-	})
-
-  log('get ready to roll!');
+	log('Betting: ', config.baseBet.value, config.autoCashOut.value);
+	engine.bet(config.baseBet.value, config.autoCashOut.value)
+	
   `;
 
 

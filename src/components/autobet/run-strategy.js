@@ -66,8 +66,22 @@ class RunStrategy extends Component {
 
 	getVals() {
 		let vals = {};
-		for (const name of Object.keys(this.props.config)) {
-			vals[name] = this.state[name] || this.props.config[name].value;
+		for (const [name, obj] of objectEntries(this.props.config)) {
+
+			const override = this.state[name] ? { value: this.state[name] } : {};
+			const res = Object.assign({}, obj, override);
+
+
+			if (res.type === 'balance') {
+				res.value = (Number.parseFloat(res.value) || 0) * 100
+			} else if (obj.type === 'multiplier') {
+				res.value = Number.parseFloat(res.value) || 0
+			} else {
+				console.error('Unknown config object type: ', res, ' is type: ', res.type);
+			}
+
+
+			vals[name] = res;
 		}
 		return vals;
 	}
@@ -75,20 +89,57 @@ class RunStrategy extends Component {
 	messageListener(e) {
 		if (!this.iframeRef || e.source !== this.iframeRef.contentWindow) return;
 
+		// Remember, we need to sanitize this against malicious script
+		if (!Array.isArray(e.data) || e.data.length !== 2) {
+			console.warn('Script broke protocol and sent a non-array');
+			return;
+		}
+
 		const [key, value] = e.data;
 
 		if (key === 'log') {
+			if (typeof value !== 'string') {
+				console.warn('Script tried to send a non-string to log');
+				return;
+			}
+
 			this.setState({
 				logs: this.state.logs.concat([ simpleDate(new Date()) + ': ' + value])
 			});
 		} else if (key === 'ready') {
 			console.log('iframe is ready: ', value);
 			this.doRun();
-		} else {
+		} else if (key === 'bet') {
+
+			if (!Array.isArray(value) || value.length !== 2) {
+				console.warn('malformed bet a proper array');
+				return;
+			}
+
+			const responseName = value[0];
+			const bet = value[1];
+
+			if (typeof bet !== 'object') {
+				console.warn('Tried to bet without a proper object');
+				return;
+			}
+
+			const { wager, payout } = bet;
+			if (!Number.isFinite(wager) || wager < 100 || !Number.isFinite(payout) || payout < 1.01) {
+				console.warn('Tried to bet without a valid wager/payout');
+				return;
+			}
+
+			engine.bet(wager, payout, true).then(
+				x   => this.iframeRef.contentWindow.postMessage([responseName, [0, x]], '*'),
+				err => this.iframeRef.contentWindow.postMessage([responseName, [1, err]], '*'),
+			);
+
+		} else if (key === 'cashOut') {
 			console.warn('Unknown event: ', key, value);
 		}
 
-		console.log('Got message: ', e.data);
+		console.log('Got unknown: ', e.data);
 	}
 
 	doStop() {
