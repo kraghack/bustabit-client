@@ -32,7 +32,6 @@ class Settings extends Component {
 											}}
 				/>;
 			case 'multiplier':
-				console.log('mulitplier item: ', name, item);
 				return <input type="number"
 											className="form-control"
 											value={ item._textInput || item.value }
@@ -60,7 +59,7 @@ class Settings extends Component {
 															 this.forceUpdate();
 														 }} />
 							</div>
-						  <div className="col-xs-11">{ this.interpretConfigItem(oName, oItem) }</div>
+						  <div className="col-xs-22">{ this.interpretConfigItem(oName, oItem) }</div>
 					</div>);
 
 				}
