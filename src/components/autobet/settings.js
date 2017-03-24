@@ -72,6 +72,15 @@ class Settings extends Component {
 	}
 
 	interpretConfigItem(name, item) {
+		if (item.type === 'radio') {
+			return <div className="form-group" key={name}>
+				<h2>{ item.label || name } </h2>
+				{ this.getConfigContents(name, item) }
+				<hr/>
+			</div>
+		}
+
+
 		return <div className="form-group" key={name}>
 			<div className="input-group">
 					<span className="input-group-addon">{ item.label || name } </span>
