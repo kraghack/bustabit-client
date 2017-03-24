@@ -34,18 +34,6 @@ class Listing extends PureComponent {
 		const { strategies } = this.state;
 		return (
 			<div>
-				<Row style={{paddingTop: '5px'}}>
-					<Col xs={11} xsOffset={1}>
-						<h5>Scripts:</h5>
-					</Col>
-					<Col xs={12}>
-						<button className="btn btn-default" onClick={ this.props.onAdd }>
-							<i className="fa fa-plus" aria-hidden="true"></i>
-							Add
-						</button>
-					</Col>
-				</Row>
-
 				<div className="strategy-listing" style={{ height: containerHeight }}>
 					<div className="list-group">
 						{ strategies.map(strategy =>
@@ -62,6 +50,17 @@ class Listing extends PureComponent {
 						}
 					</div>
 				</div>
+				<Row style={{paddingTop: '5px'}}>
+					<Col xs={11} xsOffset={1}>
+						<h5>Custom:</h5>
+					</Col>
+					<Col xs={12}>
+						<button className="btn btn-default" onClick={ this.props.onAdd }>
+							<i className="fa fa-plus" aria-hidden="true"></i>
+							Add
+						</button>
+					</Col>
+				</Row>
 			</div>
 		);
 

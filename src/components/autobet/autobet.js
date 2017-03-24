@@ -3,6 +3,7 @@ import EditStrategy from './edit-strategy'
 import Listing from './listing'
 import RunStrategy from './run-strategy'
 import configParser from '../../config-parser'
+import Settings from './settings'
 
 
 class Autobet extends Component {
@@ -12,25 +13,41 @@ class Autobet extends Component {
 
 
 			let dev = `var config = {
-		baseBet: { value: 100, type: 'balance' },
-		autoCashOut: { value: 1, type: 'multiplier' },
-	};
-	
-	log('Betting: ', config.baseBet.value, config.autoCashOut.value);
-	engine.bet(config.baseBet.value, config.autoCashOut.value)
+	baseBet: { value: 100, type: 'balance', label: 'base bet' },
+	payout: { value: 2, type: 'multiplier' },
+	stop: { value: 1e8, type: 'balance', label: 'stop if bet >' },
+	loss: {
+		value: 'base', type: 'radio', label: 'On Loss',
+		options: {
+			base: { type: 'noop', label: 'Return to base bet' },
+			increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
+		}
+	},
+	win: {
+		value: 'base', type: 'radio', label: 'On Win',
+		options: {
+			base: { type: 'noop', label: 'Return to base bet' },
+			increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
+		}
+	}
+};
 	
   `;
 
 
 
 		this.state = {
-			showing: 'running', // listing, editing, running
+			showing: 'listing', // listing, editing, running
 			config: configParser(dev)[0],
 			runnableScript: configParser(dev)[1],
 		}
 	}
 
 	render() {
+
+		return <Settings config={ this.state.config } />;
+
+		/*
 		const { showing } = this.state;
 
 		if (showing === 'listing') {
@@ -44,6 +61,7 @@ class Autobet extends Component {
 		if (showing === 'running') {
 			return <RunStrategy config={ this.state.config } runnableScript={ this.state.runnableScript } />
 		}
+		*/
 	}
 
 }

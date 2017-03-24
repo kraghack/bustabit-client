@@ -47,7 +47,6 @@ window.addEventListener('message', function (e) {
 	if (e.origin !== (window.location.protocol + "//" + window.location.host))
 		return;
 
-
 	function log() {
 		var message = '';
 		for (var i = 0; i < arguments.length; ++i) {
