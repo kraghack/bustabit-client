@@ -52,7 +52,7 @@ class Settings extends Component {
 				for (const [oName, oItem] of objectEntries(item.options)) {
 
 					items.push(<div key={oName} className="row">
-							<div className="col-xs-1 col-xs-offset-1">
+							<div className="col-xs-1">
 											<input type="checkbox" name={name} value={oName}
 														 checked={oName === item.value}
 														 onChange={ (event) => {
@@ -60,7 +60,7 @@ class Settings extends Component {
 															 this.forceUpdate();
 														 }} />
 							</div>
-						  <div className="col-xs-21" style={{ paddingRight: '0px'}}>{ this.interpretConfigItem(oName, oItem) }</div>
+						  <div className="col-xs-22">{ this.interpretConfigItem(oName, oItem) }</div>
 					</div>);
 
 				}
@@ -74,9 +74,8 @@ class Settings extends Component {
 	interpretConfigItem(name, item) {
 		if (item.type === 'radio') {
 			return <div className="form-group" key={name}>
-				<h2>{ item.label || name } </h2>
+				<hr className="hr-text" data-content={ item.label || name } />
 				{ this.getConfigContents(name, item) }
-				<hr/>
 			</div>
 		}
 
@@ -101,7 +100,10 @@ class Settings extends Component {
 			items.push(this.interpretConfigItem(name, item));
 		}
 
-		return <Col xs={24}>{items}</Col>;
+		return <Col xs={24}>
+			<div className="visible-sm-block visible-xs-block" style={{ marginTop: '10px'}}></div>
+			{items}
+			</Col>;
 	}
 
 
