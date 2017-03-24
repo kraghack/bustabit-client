@@ -152,6 +152,10 @@ hr.hr-light {
   }
 }
 
+.bet-controls {
+  overflow-y: auto;
+}
+
 @media (max-width: 991px) {
   .component-box.bet-controls {
     display: flex;
@@ -161,6 +165,7 @@ hr.hr-light {
     border-top: 0px;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
+
   }
 }
 

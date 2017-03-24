@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Col } from 'react-bootstrap'
 
 import { objectEntries } from '../../util/belt';
 
@@ -51,7 +52,7 @@ class Settings extends Component {
 				for (const [oName, oItem] of objectEntries(item.options)) {
 
 					items.push(<div key={oName} className="row">
-							<div className="col-xs-1">
+							<div className="col-xs-1 col-xs-offset-1">
 											<input type="checkbox" name={name} value={oName}
 														 checked={oName === item.value}
 														 onChange={ (event) => {
@@ -59,7 +60,7 @@ class Settings extends Component {
 															 this.forceUpdate();
 														 }} />
 							</div>
-						  <div className="col-xs-22">{ this.interpretConfigItem(oName, oItem) }</div>
+						  <div className="col-xs-21" style={{ paddingRight: '0px'}}>{ this.interpretConfigItem(oName, oItem) }</div>
 					</div>);
 
 				}
@@ -71,11 +72,13 @@ class Settings extends Component {
 	}
 
 	interpretConfigItem(name, item) {
-		return <div className="input-group" key={name}>
-				<span className="input-group-addon">{ item.label || name } </span>
-				{ this.getConfigContents(name, item) }
-				{ item.type === 'balance' && <span className="input-group-addon">bits</span>}
-		  	{ item.type === 'multiplier' && <span className="input-group-addon">x</span>}
+		return <div className="form-group" key={name}>
+			<div className="input-group">
+					<span className="input-group-addon">{ item.label || name } </span>
+					{ this.getConfigContents(name, item) }
+					{ item.type === 'balance' && <span className="input-group-addon">bits</span>}
+					{ item.type === 'multiplier' && <span className="input-group-addon">x</span>}
+			</div>
 		</div>
 	}
 
@@ -89,7 +92,7 @@ class Settings extends Component {
 			items.push(this.interpretConfigItem(name, item));
 		}
 
-		return <div>{items}</div>;
+		return <Col xs={24}>{items}</Col>;
 	}
 
 
