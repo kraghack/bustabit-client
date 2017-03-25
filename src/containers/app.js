@@ -52,7 +52,7 @@ class App extends Component {
       <div className="container-fluid" style={styles.mainContainer}>
         <TopBar/>
         <Notification/>
-        <div className="col-xs-24" style={{ display: 'flex'}}>
+        <div className="col-xs-24">
           <div className="row">
             {/* Sidebar */}
             { browserSize.isMobile() ? ''

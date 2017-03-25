@@ -20,7 +20,8 @@ class Chat extends Component {
       </li>); */
 
 
-    let chatContainerHeight = (((height - (browserSize.topBarHeight()+browserSize.marginsHeight())) * browserSize.bottomWidgetHeight() ) - (browserSize.previousCrashesHeight() + browserSize.addChatHeight())) +'px'
+    let chatContainerHeight = (((height - (browserSize.topBarHeight() + browserSize.marginsHeight())) * browserSize.bottomWidgetHeight() )
+			- (browserSize.previousCrashesHeight() + browserSize.addChatHeight() + browserSize.chatTitleHeight())) +'px';
 
 
     const chatChannelContainer = {

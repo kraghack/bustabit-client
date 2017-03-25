@@ -54,7 +54,7 @@ class ChatHistory extends Component {
 // 20 is the height of channel-title
 
     let chatContainerHeight = (((height - (browserSize.topBarHeight() + browserSize.marginsHeight())) * browserSize.bottomWidgetHeight() )
-			- (browserSize.previousCrashesHeight() + browserSize.addChatHeight() + 20)) +'px';
+			- (browserSize.previousCrashesHeight() + browserSize.addChatHeight() + browserSize.chatTitleHeight())) +'px';
 
 
 

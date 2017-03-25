@@ -62,6 +62,10 @@ class BrowserSize extends EventEmitter {
 	addChatHeight() {
     return this.isMobile() ? 34 : 34
 	}
+
+	chatTitleHeight() {
+		return this.isMobile() ? 20 : 20
+	}
 }
 
 function browserWidth() {
