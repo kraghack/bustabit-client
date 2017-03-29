@@ -2,66 +2,50 @@ import React, { Component } from 'react';
 import EditStrategy from './edit-strategy'
 import Listing from './listing'
 import RunStrategy from './run-strategy'
-import configParser from '../../config-parser'
-import Settings from './settings'
-
+import ViewCode from './view-code'
 
 class Autobet extends Component {
 
 	constructor() {
 		super();
 
-
-			let dev = `var config = {
-	baseBet: { value: 100, type: 'balance', label: 'base bet' },
-	payout: { value: 2, type: 'multiplier' },
-	stop: { value: 1e8, type: 'balance', label: 'stop if bet >' },
-	loss: {
-		value: 'base', type: 'radio', label: 'On Loss',
-		options: {
-			base: { type: 'noop', label: 'Return to base bet' },
-			increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
-		}
-	},
-	win: {
-		value: 'base', type: 'radio', label: 'On Win',
-		options: {
-			base: { type: 'noop', label: 'Return to base bet' },
-			increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
-		}
-	}
-};
-	
-  `;
-
-
-
 		this.state = {
-			showing: 'listing', // listing, editing, running
-			config: configParser(dev)[0],
-			runnableScript: configParser(dev)[1],
+			showing: 'listing', // listing, editStrategy, runStrategy, viewCode
 		}
 	}
 
 	render() {
 
-		return <Settings config={ this.state.config } />;
-
-		/*
 		const { showing } = this.state;
 
 		if (showing === 'listing') {
-			return <Listing onAdd={() => this.setState({ showing: 'edit' })}/>
+			return <Listing
+				onAdd={() => this.setState({ showing: 'editStrategy' })}
+				onView={ (name, script) => this.setState({ showing: 'viewCode', name, script })  }
+				onRun={ (name, script) => this.setState({ showing: 'runStrategy', name, script }) }
+			/>
 		}
 
-		if (showing === 'edit') {
+		if (showing === 'editStrategy') {
 			return <EditStrategy onRun={ (config, runnableScript) => this.setState({ showing: 'running', config, runnableScript }) } />
 		}
 
-		if (showing === 'running') {
-			return <RunStrategy config={ this.state.config } runnableScript={ this.state.runnableScript } />
+		if (showing === 'runStrategy') {
+			return <RunStrategy
+					name={ this.state.name }
+					script={ this.state.script }
+				/>
 		}
-		*/
+
+		if (showing === 'viewCode') {
+			return <ViewCode
+				name={ this.state.name }
+				script={ this.state.script }
+				onBack={ () => this.setState({ showing: 'listing' }) }
+			/>
+		}
+
+		throw new Error('Unknown showing: ' + showing);
 	}
 
 }

@@ -6,7 +6,7 @@ import { objectEntries } from '../../util/belt';
 // This is a rather strange component, it takes a proper `config` and mutates it as the user changes it
 
 
-class Settings extends Component {
+class ShowConfig extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -110,9 +110,9 @@ class Settings extends Component {
 
 }
 
-Settings.propTypes = {
+ShowConfig.propTypes = {
 	config: PropTypes.object.isRequired
 };
 
 
-export default Settings;
+export default ShowConfig;

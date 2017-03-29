@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 
-import { objectEntries } from '../../util/belt';
 import socket from '../../socket'
 import chat from '../../core/chat'
 import userInfo from '../../core/user-info'
 import engine from '../../core/engine'
 import { simpleDate } from '../../util/belt'
+import configParser from '../../config-parser'
+import ShowConfig from './show-config'
 
 
 
@@ -20,6 +21,18 @@ class RunStrategy extends Component {
 			logs: [],
 			running: false,
 		};
+
+		this.config = {};
+		this.scriptRest = '';
+
+		try {
+			[this.config, this.scriptRest] = configParser(this.props.script);
+		} catch (ex) {
+			console.error('couldnt parse script, got err: ', ex);
+			this.state = {err: ex, ...this.state };
+			return;
+		}
+
 	}
 
 	componentDidMount() {
@@ -34,57 +47,6 @@ class RunStrategy extends Component {
 		this.doStop()
 	}
 
-
-	interpretConfigItem(name, item) {
-		switch (item.type) {
-			case 'balance':
-			case 'multiplier':
-				return <input type="number"
-											className="form-control"
-											value={ this.state[name] || this.props.config[name].value }
-					onChange={ (event) => this.setState({ [name]: event.target.value}) }
-				/>;
-			default:
-				return <h1>Error: Unknown item type: { item.type }</h1>
-		}
-
-	}
-
-	interpretConfig() {
-
-		let items = [];
-
-		for (const [name, item] of objectEntries(this.props.config)) {
-
-			items.push(<div key={name}>
-				{name}: { this.interpretConfigItem(name, item) }
-			</div>);
-		}
-
-		return items;
-	}
-
-	getVals() {
-		let vals = {};
-		for (const [name, obj] of objectEntries(this.props.config)) {
-
-			const override = this.state[name] ? { value: this.state[name] } : {};
-			const res = Object.assign({}, obj, override);
-
-
-			if (res.type === 'balance') {
-				res.value = (Number.parseFloat(res.value) || 0) * 100
-			} else if (obj.type === 'multiplier') {
-				res.value = Number.parseFloat(res.value) || 0
-			} else {
-				console.error('Unknown config object type: ', res, ' is type: ', res.type);
-			}
-
-
-			vals[name] = res;
-		}
-		return vals;
-	}
 
 	messageListener(e) {
 		if (!this.iframeRef || e.source !== this.iframeRef.contentWindow) return;
@@ -167,9 +129,8 @@ class RunStrategy extends Component {
 	}
 
 	doRun() {
-		const config = this.getVals();
 
-		const script = "var config = " + JSON.stringify(config) + ";\n" + this.props.runnableScript;
+		const script = "var config = " + JSON.stringify(this.config) + ";\n" + this.scriptRest;
 		const chatState = chat.getState();
 		const userInfoState = userInfo.getState();
 		const engineState = engine.getState();
@@ -205,7 +166,7 @@ class RunStrategy extends Component {
 		const { running } = this.state;
 
 		return <div>
-			{ this.interpretConfig() }
+			<ShowConfig config={this.config} />
 			{
 				!running && <button onClick={ () => this.run() } className="btn btn-primary">Run!</button>
 			}
@@ -228,8 +189,8 @@ class RunStrategy extends Component {
 }
 
 RunStrategy.propTypes = {
-	config: PropTypes.object.isRequired,
-	runnableScript:  PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	script:  PropTypes.string.isRequired,
 };
 
 

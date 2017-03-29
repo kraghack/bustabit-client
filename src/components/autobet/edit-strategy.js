@@ -16,7 +16,7 @@ function validateName(name) {
 		return 'Please enter a name.'
 }
 
-class Autobet extends Component {
+class EditStrategy extends Component {
 
 	constructor(props) {
 		super();
@@ -72,8 +72,8 @@ class Autobet extends Component {
 
 }
 
-Autobet.propTypes = {
+EditStrategy.propTypes = {
 	onRun: PropTypes.func.isRequired
 };
 
-export default Autobet;
+export default EditStrategy;
