@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import EditStrategy from './edit-strategy'
+import AddStrategy from './add-strategy'
 import Listing from './listing'
 import RunStrategy from './run-strategy'
 import ViewCode from './view-code'
@@ -10,7 +10,7 @@ class Autobet extends Component {
 		super();
 
 		this.state = {
-			showing: 'listing', // listing, editStrategy, runStrategy, viewCode
+			showing: 'listing', // listing, addStrategy, runStrategy, viewCode
 		}
 	}
 
@@ -20,14 +20,14 @@ class Autobet extends Component {
 
 		if (showing === 'listing') {
 			return <Listing
-				onAdd={() => this.setState({ showing: 'editStrategy' })}
+				onAdd={() => this.setState({ showing: 'addStrategy' })}
 				onView={ (name, script) => this.setState({ showing: 'viewCode', name, script })  }
 				onRun={ (name, script) => this.setState({ showing: 'runStrategy', name, script }) }
 			/>
 		}
 
-		if (showing === 'editStrategy') {
-			return <EditStrategy onRun={ (config, runnableScript) => this.setState({ showing: 'running', config, runnableScript }) } />
+		if (showing === 'addStrategy') {
+			return <AddStrategy onRun={ (script) => this.setState({ showing: 'runStrategy', name: 'Custom', script }) } />
 		}
 
 		if (showing === 'runStrategy') {
