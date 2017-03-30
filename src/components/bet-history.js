@@ -20,7 +20,7 @@ class BetHistory extends Component {
 									<CopyableHash hash={item.hash}/>
 								</td>
 							</tr>
-						).reverse()
+						)
 					}
           </tbody>
     )

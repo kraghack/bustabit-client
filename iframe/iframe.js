@@ -48,17 +48,25 @@ window.addEventListener('message', function (e) {
 		return;
 
 	function log() {
-		var message = '';
+		var arr = ['LOG:']; // we will later shift this off, this is just for the console.log
 		for (var i = 0; i < arguments.length; ++i) {
-			message += String(arguments[i]);
-			if (i != arguments.length - 1) {
-				message += '\t';
-			}
+			arr.push(arguments[i]);
 		}
-		parentPost('log', message);
-	}
 
-	console.log('got message: ', e.data);
+		console.log.apply(console.log, arr);
+		arr.shift();
+		arr = arr.map(elem => {
+			if (typeof elem !== 'object') return elem;
+
+			try {
+				return JSON.stringify(elem);
+			} catch(ex) {
+				return elem;
+			}
+		});
+
+		parentPost('log', arr.join('\t'));
+	}
 
 	if (firstMessage) {
 		firstMessage = false;

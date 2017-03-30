@@ -12,6 +12,13 @@ import {  objectEntries } from '../util/belt'
 //  ... PLAYERS_CHANGED     (anything to do with the player list..)
 //  ... HISTORY_CHANGED (new item in the history)
 
+// events really strategies
+// GAME_STARTING
+// GAME_STARTED
+// GAME_ENDED
+// GAME_STOPPED
+// BET_PLACED
+// CASHED_OUT
 
 
 export default class Engine extends EventEmitter {
@@ -124,9 +131,10 @@ export default class Engine extends EventEmitter {
 			this.emit('BANKROLL_CHANGED');
 			this.emit('PLAYERS_CHANGED');
 			this.emit('GAME_STATE_CHANGED');
+			this.emit('GAME_STARTING', info);
 		});
 
-		socket.on('gameStarted', () => {
+		socket.on('gameStarted', info => {
 			this.gameState = 'GAME_IN_PROGRESS';
 			this.startTime = Date.now();
 			this.lastGameTick = this.startTime;
@@ -135,6 +143,8 @@ export default class Engine extends EventEmitter {
 
 			this.emit('GAME_STATE_CHANGED');
 			this.emit('PLAYERS_CHANGED'); // Not quite sure this is required
+
+			this.emit('GAME_STARTED', info);
 		});
 
 
@@ -147,7 +157,7 @@ export default class Engine extends EventEmitter {
 			// TODO: .... handle bankroll info..
 
 
-			this.history.push({
+			this.history.unshift({
 				gameId: this.gameId,
 				bust: this.bust,
 				hash: info.hash,
@@ -156,17 +166,21 @@ export default class Engine extends EventEmitter {
 			});
 
 			if (this.history.length > 100) {
-				this.history.shift()
+				this.history.pop()
 			}
 
 			this.emit('HISTORY_CHANGED');
 			this.emit('GAME_STATE_CHANGED');
 			this.emit('PLAYERS_CHANGED');
+
+			this.emit('GAME_ENDED', info);
 		});
 
-		socket.on('gameStopped', () => {
+		socket.on('gameStopped', (info) => {
 			this.gameState = 'GAME_STOPPED';
 			this.emit('GAME_STATE_CHANGED');
+
+			this.emit('GAME_STOPPED', info);
 		});
 
 
@@ -184,6 +198,8 @@ export default class Engine extends EventEmitter {
 			}
 
 			this.emit('PLAYERS_CHANGED');
+
+			this.emit('BET_PLACED', bet)
 		});
 
 
@@ -217,6 +233,8 @@ export default class Engine extends EventEmitter {
 			}
 
 			this.emit('PLAYERS_CHANGED');
+
+			this.emit('CASHED_OUT', cashOuts);
 		});
 
 

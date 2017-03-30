@@ -29,7 +29,7 @@ class RunStrategy extends Component {
 			[this.config, this.scriptRest] = configParser(this.props.script);
 		} catch (ex) {
 			console.error('couldnt parse script, got err: ', ex);
-			this.state = {err: ex, ...this.state };
+			this.state = { err: ex, ...this.state };
 			return;
 		}
 
