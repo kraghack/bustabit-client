@@ -1,6 +1,4 @@
-/* eslint-disable */
-export default (function(){
-	var config = {
+export default `var config = {
 		baseBet: { value: 100, type: 'balance', label: 'base bet' },
 		payout: { value: 2, type: 'multiplier' },
 		stop: { value: 1e8, type: 'balance', label: 'stop if bet >' },
@@ -23,7 +21,7 @@ export default (function(){
 
 	log('Script is running..');
 
-	let currentBet = config.baseBet.value;
+	var currentBet = config.baseBet.value;
 
 	engine.on('GAME_STARTING', onGameStarted);
 
@@ -67,6 +65,4 @@ export default (function(){
 		}
 	}
 
-
-
-}).toString().slice(16, -1);
+`
