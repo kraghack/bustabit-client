@@ -47,6 +47,14 @@ class ShowConfig extends Component {
 												this.forceUpdate();
 											}}
 				/>;
+			case 'text':
+				return <input type="text"
+											className="form-control"
+											value={ item.value }
+											onChange={ (event) => {
+												item.value = event.target.value;
+												this.forceUpdate();
+											}} />;
 			case 'radio':
 				let items = [];
 				for (const [oName, oItem] of objectEntries(item.options)) {
@@ -65,6 +73,7 @@ class ShowConfig extends Component {
 
 				}
 				return <div>{ items }</div>;
+
 			default:
 				console.log('unknown: ', item.type);
 				return <h1>Error: Unknown item type: { item.type }</h1>

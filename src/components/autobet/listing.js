@@ -2,6 +2,7 @@ import React, { PropTypes, PureComponent } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
 import martingaleStrategy from './strategies/martingale'
+import followStrategy from './strategies/follow'
 
 
 class Listing extends PureComponent {
@@ -11,7 +12,7 @@ class Listing extends PureComponent {
 		this.state = {
 			strategies: [
 				{ id: 1, name: 'Martingale', script: martingaleStrategy },
-				{ id: 24, name: 'Sniper', script: '// TODO: ...' },
+				{ id: 2, name: 'Follow',     script: followStrategy     },
 			]
 		}
 	}

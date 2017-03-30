@@ -204,7 +204,6 @@ export default class Engine extends EventEmitter {
 
 
 		socket.on('cashedOut', (cashOuts) => {
-			let changeBalance = 0;
 
 			for (const [cashedAt, ...unames] of cashOuts) {
 
@@ -219,22 +218,18 @@ export default class Engine extends EventEmitter {
 						this.cashingOut = false;
 						this.cashedAt = cashedAt;
 
-						// We should emit bet_status_changed, but let's do that at the end
-						// we will change changeBalance so we know
-						changeBalance = wager * cashedAt;
+
+						userInfo.changeBalance(wager * cashedAt);
+						this.emit('BET_STATUS_CHANGED');
 					}
+
+					// A simpler event for scripts
+					this.emit('CASHED_OUT', { uname, cashedAt, wager });
 				}
 
 			}
 
-			if (changeBalance !== 0) {
-				userInfo.changeBalance(changeBalance);
-				this.emit('BET_STATUS_CHANGED');
-			}
-
 			this.emit('PLAYERS_CHANGED');
-
-			this.emit('CASHED_OUT', cashOuts);
 		});
 
 

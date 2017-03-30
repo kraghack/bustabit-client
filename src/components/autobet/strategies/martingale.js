@@ -8,14 +8,14 @@ export default (function(){
 			value: 'base', type: 'radio', label: 'On Loss',
 			options: {
 				base: { type: 'noop', label: 'Return to base bet' },
-				increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
+				increase: { value: 2, type: 'multiplier', label: 'Increase bet by' },
 			}
 		},
 		win: {
 			value: 'base', type: 'radio', label: 'On Win',
 			options: {
 				base: { type: 'noop', label: 'Return to base bet' },
-				increase: { value: 1, type: 'multiplier', label: 'Increase bet by' },
+				increase: { value: 2, type: 'multiplier', label: 'Increase bet by' },
 			}
 		}
 	};
