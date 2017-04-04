@@ -113,11 +113,6 @@ class TopBarMobile extends PureComponent {
                 </Link>
               </li>
               <li>
-                <Link to="/trade/order-book" style={styles.navItem}>
-                  <i className="fa fa-handshake-o" aria-hidden="true"></i> Trade Center
-                </Link>
-              </li>
-              <li>
                 <Link to="/fair" style={styles.navItem}>
                   <i className="fa fa-balance-scale" aria-hidden="true"></i> Provably Fair
                 </Link>

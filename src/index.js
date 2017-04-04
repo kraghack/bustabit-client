@@ -75,12 +75,6 @@ import AddToBankroll from './components/bankroll/add-to-bankroll'
 import RemoveFromBankroll from './components/bankroll/remove-from-bankroll'
 import BankrollHistory from './components/bankroll/history'
 
-import TradeCenterContainer from './components/trade/container'
-import CreateTrade from './components/trade/create-trade'
-import MyTrades from './components/trade/my-trades'
-import OrderBook from './components/trade/order-book'
-
-
 import AddFriend from './components/add-friend'
 
 import GameInformation from './components/game-information'
@@ -164,11 +158,6 @@ render(
             <Route path="bankroll/history" components={ { body: BankrollHistory} }/>
           </Route>
 
-          <Route components={ {title: createTitleComponent("Trade Center"), body: TradeCenterContainer} } >
-            <Route path="trade/order-book" components={{ body: OrderBook }}/>
-            <Route path="trade/create-trade" components={{ body: CreateTrade }}/>
-            <Route path="trade/my-trades" components={ { body: MyTrades} }/>
-          </Route>
           <Route path="game/:gameId" components={{title: createTitleComponent("Game Information"), body: GameInformation}} />
           <Route path="bet/:betId" components={{title: createTitleComponent("Bet Information"), body: BetInformation}} />
 					<Route path="user/:uname" components={{title: createTitleComponent("User Stats"), body: UserPage}} />

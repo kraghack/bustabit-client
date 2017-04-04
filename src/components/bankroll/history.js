@@ -45,15 +45,14 @@ class BankrollHistory extends PureComponent {
 
 	results() {
 		return this.state.history.map(d => {
-			let balanceDelta = d.amount - d.silver;
+
 
 			return <tr key={ d.id }>
 				<td>{ d.created }</td>
 				<td>{ formatBalance(d.preBankroll) } bits</td>
-				<td>{ d.amount > 0 ? 'Added' : 'Removed' }</td>
-				<td>{ Math.floor(balanceDelta) !== 0 && formatBalance(balanceDelta) + ' bits' }
-					{ d.silver !== 0 && ' '+ formatBalance(d.silver) +' silver'}
-				</td>
+				<td>{ d.amount > 0 || d.offsite ? 'Added' : 'Removed' }</td>
+				<td>{ formatBalance(d.amount) } bits</td>
+				<td>{ formatBalance(d.offsite) } bits </td>
 			</tr>
 		});
 	}
@@ -72,6 +71,7 @@ class BankrollHistory extends PureComponent {
 							<th>Bankroll At Time</th>
 							<th>Operation</th>
               <th>Amount</th>
+							<th>Offsite</th>
             </tr>
             </thead>
             <tbody>

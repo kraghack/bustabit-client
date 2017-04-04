@@ -35,10 +35,6 @@ class VerticalMenu extends PureComponent {
     const tooltipSupport = (
       <Tooltip id="tooltipSupport"><strong>Support</strong></Tooltip>
     );
-    const tooltipTradeCenter = (
-        <Tooltip id="tooltipTradeCenter"><strong>Trade Center</strong></Tooltip>
-    );
-
 
     return (
       <div style={styles.container}>
@@ -57,11 +53,6 @@ class VerticalMenu extends PureComponent {
             <i className="fa fa-university fa-2x"></i>
           </Link>
         </OverlayTrigger>
-          <OverlayTrigger placement="right" overlay={tooltipTradeCenter}>
-              <Link to="/trade/order-book" className="vertical-icon" key="tradeCenter">
-                  <i className="fa fa-handshake-o fa-2x"></i>
-              </Link>
-          </OverlayTrigger>
         <OverlayTrigger placement="right" overlay={tooltipFair}>
           <Link to="/fair" className="vertical-icon" key="fair">
             <i className="fa fa-balance-scale fa-2x"></i>
