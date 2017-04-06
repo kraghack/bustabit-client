@@ -51,7 +51,7 @@ export function isAmountInvalid(amount, minAmount, maxAmount) {
 
 	const isNumberRegex = /^[1-9]\d*$/; // handle against leading zeros
 
-	if (!isNumberRegex.test(amount))
+	if (!isNumberRegex.test(amount) && amount !== '0')
 		return 'The amount should be a whole number.';
 
 	amount = Number.parseFloat(amount) * 100;
@@ -117,14 +117,6 @@ export function validateEmail(email) {
 		return 'This does not look like a valid email.'
 }
 
-export function formatCurrency(currency, amount) {
-
-	if(currency === "BALANCE")
-		return Math.floor(amount) ===  100 ?  'bit' : 'bits';
-
-	console.assert(currency === 'VALOR'  || currency === 'SILVER');
-	return currency.toLowerCase();
-}
 
 // a copy of Object.entries, cause safari doesn't support
 export function objectEntries(obj) {

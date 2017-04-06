@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 
 // events:
 //  UNAME_CHANGED:    called during login/log out the uname changes
-//  BALANCE_CHANGED:  the balance/silver/valor has changed
+//  BALANCE_CHANGED:  the balance has changed
 //  BANKROLL_STATS_CHANGED: The bankroll{Stake, HighWater}, invested or divested changed
 //  HAS_MFA_CHANGED
 //  EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED
@@ -40,10 +40,6 @@ export default class UserInfo extends EventEmitter {
 			this.changeBalance(amount);
 		});
 
-		socket.on('fused', amount => {
-			this.fuse(amount);
-		});
-
 		socket.on('logout', () => {
 			localStorage.removeItem('secret');
 			this.logOut();
@@ -76,39 +72,14 @@ export default class UserInfo extends EventEmitter {
 		socket.on('tipped', d => {
 			if (d.toUname === this.uname) {
 				console.assert(typeof d.amount === 'number');
-				switch(d.currency) {
-					case "BALANCE":
-						this.balance += d.amount;
-						break;
-					case "VALOR":
-						this.valor += d.amount;
-						break;
-					case "SILVER":
-						this.silver += d.amount;
-						break;
-					default:
-						break;
-				}
-				this.emit('BALANCE_CHANGED', d.amount);
+				this.balance += d.amount;
+				this.emit('BALANCE_CHANGED');
 			}
+
 			if (d.uname === this.uname)  {
 				console.assert(typeof d.amount === 'number');
-				switch(d.currency) {
-					case "BALANCE":
-						this.balance -= (d.amount + d.fee);
-						break;
-					case "VALOR":
-						this.valor -= d.amount;
-						this.balance -= d.fee;
-						break;
-					case "SILVER":
-						this.silver -= d.amount;
-						this.balance -= d.fee;
-						break;
-					default:
-						break;
-				}
-				this.emit('BALANCE_CHANGED', d.amount);
+				this.balance -= (d.amount + d.fee);
+				this.emit('BALANCE_CHANGED');
 			}
 		});
 
@@ -128,11 +99,9 @@ export default class UserInfo extends EventEmitter {
 		this.profit = 0;
 		this.profitATH = 0;
 		this.profitATL = 0;
-		this.silver = 0.0;
 		this.stake = 0;
 		this.uname = '';
 		this.unpaidDeposits = 0;
-		this.valor = 0.0;
 		this.wagered = 0.0;
 	}
 
@@ -186,15 +155,7 @@ export default class UserInfo extends EventEmitter {
 	// different for the animations point of view (as it's not really a loss)
   changeBalanceFromBet(amount) {
 		this.balance -= amount;
-		this.valor += amount / 100;
 		this.emit('BALANCE_CHANGED', -amount);
-	}
-
-	fuse(amount) {
-		this.balance += amount;
-		this.valor -= amount;
-		this.silver -= amount;
-		this.emit('BALANCE_CHANGED', amount);
 	}
 
   invest(amount, newStake) {
@@ -208,12 +169,10 @@ export default class UserInfo extends EventEmitter {
 		this.emit('BANKROLL_STATS_CHANGED');
 	}
 
-	divest(amount, silver, newStake) {
+	divest(amount, newStake) {
 
-		this.highWater -= amount;
 		this.stake = newStake;
-		this.silver += silver;
-		this.divested += amount + silver;
+		this.divested += amount;
 
 		// we have to call this last, because it has a sync emit:
 		this.changeBalance(amount);

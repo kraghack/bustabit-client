@@ -14,7 +14,7 @@ class BankrollHistory extends PureComponent {
 		this.state = {
 			loading: true,
 			error: null,
-			history: []  // an object of { 	amount, created, id, silver }
+			history: []  // an object of { 	amount, created, id, offsite }
 		}
 	}
 

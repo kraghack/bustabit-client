@@ -53,8 +53,6 @@ import BugBounty from './components/faq/bug-bounty'
 import ChatCommands from './components/faq/chat-commands'
 import MobileApp from './components/faq/mobile-app'
 import HowDoesTheBankrollWork from './components/faq/how-does-the-bankroll-work'
-import WhatIsValor from './components/faq/what-is-valor'
-import WhatIsSilver from './components/faq/what-is-silver'
 import FaucetFaq from './components/faq/faucet'
 import HowToTip from './components/faq/how-to-tip'
 import HowToTrade from './components/faq/how-to-trade'
@@ -87,14 +85,11 @@ import ResetPassword from './components/reset-password'
 import WithdrawalFee from './components/faq/withdrawal-fee'
 import TipFee from './components/faq/tip-fee'
 import QueuedWithdrawals from './components/transactions/queued-withdrawals'
-import Fuse from './components/fuse'
-import HowToFuse from './components/faq/how-to-fuse'
 
 import AccountSettingsMenu from './components/account/settings-menu'
 import DeleteAccount from './components/account/settings-delete-account'
 import SelfBan from './components/account/self-ban'
 import Mute from './components/chat/mute'
-import TradeFee from './components/faq/trade-fee'
 
 import { Router, Route, browserHistory } from 'react-router'
 
@@ -167,7 +162,6 @@ render(
           <Route path="deposit" components={{title: createTitleComponent("Deposit"), body: Deposit}}/>
           <Route path="withdraw" components={{title: createTitleComponent("Withdraw"), body: Withdraw}}/>
           <Route path="queued-withdrawals" components={{title: createTitleComponent("Queued Withdrawals"), body: QueuedWithdrawals}}/>
-          <Route path="fuse" components={{title: createTitleComponent("Fuse"), body: Fuse}}/>
 
           <Route path="tip" components={{title: createTitleComponent("Send a Tip"), body: Tip}}/>
           <Route path="faq" components={{title: createTitleComponent("Frequently Asked Questions"), body: FaqMenu}} />
@@ -195,8 +189,6 @@ render(
             <Route path="faq/bug-bounty" components={ { body: BugBounty} }/>
             <Route path="faq/chat-commands" components={ { body: ChatCommands} }/>
             <Route path="faq/mobile-app" components={ { body: MobileApp} }/>
-            <Route path="faq/what-is-valor" components={ { body: WhatIsValor} }/>
-            <Route path="faq/what-is-silver" components={ { body: WhatIsSilver} }/>
             <Route path="faq/how-does-the-bankroll-work" components={ { body: HowDoesTheBankrollWork} }/>
             <Route path="faq/withdrawal-fee" components={ { body: WithdrawalFee} }/>
             <Route path="faq/tip-fee" components={ { body: TipFee} }/>
@@ -210,8 +202,6 @@ render(
             <Route path="faq/faucet" components={ { body: FaucetFaq} }/>
             <Route path="faq/how-to-trade" components={ { body: HowToTrade} }/>
             <Route path="faq/how-to-tip" components={ { body: HowToTip} }/>
-						<Route path="faq/how-to-fuse" components={ { body: HowToFuse} }/>
-            <Route path="faq/trade-fee" components={ { body: TradeFee} }/>
           </Route>
 					<Route path="mute" components={{title: createTitleComponent("Mute"), body: Mute}}/>
           <Route path="admin" components={{title: createTitleComponent("Admin"), body: Admin }}/>

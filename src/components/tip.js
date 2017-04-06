@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { Form, FormControl, Col, FormGroup, InputGroup } from 'react-bootstrap'
+import { Form, Col, FormGroup, InputGroup } from 'react-bootstrap'
 import { validateUname, formatBalance } from '../util/belt'
 import { tipFee } from '../util/config'
 import { Link, browserHistory } from 'react-router'
@@ -34,7 +34,6 @@ class Tip extends Component {
 		this.firstInput = null; // this is a ref
     this.state = {
       amount: '',
-      currency: 'BALANCE',
       recipient: this.props.location.query.uname || '',
       error: null,
       amountError: null,
@@ -79,21 +78,21 @@ class Tip extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    let {amount, currency, recipient} = this.state;
+    let {amount, recipient} = this.state;
 
     if (this.validate(this.state)) {
       amount = Number.parseInt(amount, 10) * 100;
 			this.setState({ submitting: true, touched: true });
 
       const confirmMessage = 'Are you sure you want to send a tip of ' +
-        formatBalance(amount) + ' ' + currency + ' to '+ recipient + '? Consider you will also be paying a tip fee of '
+        formatBalance(amount) + 'bits to '+ recipient + '? Consider you will also be paying a tip fee of '
         + formatBalance(tipFee)+(tipFee !== 100 ? ' bits.' : ' bit.');
 
 
       confirm(confirmMessage).then(
         (result) => {
           console.log(result);
-          socket.send('tip', {amount, currency, uname: recipient})
+          socket.send('tip', {amount, uname: recipient})
             .then(() => {
                 console.log('Tip: ', amount,' sent to ',recipient);
 								this.setState({ submitting: false });
@@ -104,8 +103,8 @@ class Tip extends Component {
 								this.setState({ submitting: false });
 								switch (error) {
 									case "NOT_ENOUGH":
-										console.error('You don\'t have enough ' + currency);
-										notification.setMessage(<span><span className="red-tag">Error </span> You don't have enough {currency.toLowerCase()}.</span>, 'error');
+										console.error('You don\'t have enough balance');
+										notification.setMessage(<span><span className="red-tag">Error </span> You don't have enough balance}.</span>, 'error');
 										break;
 									case "NO_SUCH_USER":
 										console.error('The username ' + recipient + ' doesn\'t exist.');
@@ -128,32 +127,12 @@ class Tip extends Component {
   }
 
   maxTipAmount() {
-    const { currency } = this.state;
     let { tipFee } = this.state;
     tipFee = Number.parseFloat(tipFee);
 
-    let max = 0;
-
-    switch (currency) {
-      case "BALANCE":
-        max = userInfo.balance - tipFee;
-        this.setState({amount: max / 100 });
-        console.log('Bits selected and the max is: '+ formatBalance(max));
-        break;
-      case "VALOR":
-        max = userInfo.valor;
-        this.setState({amount: max });
-        console.log('Valor selected and the max is: '+ max);
-        break;
-      case "SILVER":
-        max = userInfo.silver;
-        this.setState({amount: max });
-        console.log('Silver selected and the max is: '+ max);
-        break;
-      default:
-        console.log('Something went wrong here.');
-    }
-
+    let max = userInfo.balance - tipFee;
+		this.setState({amount: max / 100 });
+		console.log('Bits selected and the max is: '+ formatBalance(max));
 
   }
 
@@ -180,23 +159,6 @@ class Tip extends Component {
 												 ref={(input) => { this.firstInput = input; }}
 												 onChange={(event) => this.onAmountChange(event)}
 									/>
-								</InputGroup>
-							</FormGroup>
-						</Col>
-						<Col xs={9} xsOffset={1}>
-							<FormGroup>
-								<InputGroup>
-									<InputGroup.Addon>
-										Currency:
-									</InputGroup.Addon>
-									<FormControl componentClass="select"
-															 value={this.state.currency}
-															 onChange={(event) => this.setState({currency: event.target.value})}
-									>
-										<option value="BALANCE">Bits</option>
-										<option value="VALOR">Valor</option>
-										<option value="SILVER">Silver</option>
-									</FormControl>
 								</InputGroup>
 							</FormGroup>
 						</Col>

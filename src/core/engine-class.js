@@ -265,7 +265,8 @@ export default class Engine extends EventEmitter {
 			const { stake } = userInfo;
 			const { bankroll } = this;
 
-			const total = divested.balance + divested.silver;
+
+			const total = divested.balance;
 			const newBankroll = bankroll - total;
 
 			let newStake = newBankroll > 0 ? (stake * bankroll - total) / newBankroll : 0;
@@ -273,7 +274,7 @@ export default class Engine extends EventEmitter {
 			this.bankroll -= total;
 			this.divested += total;
 			this.emit('BANKROLL_CHANGED');
-			userInfo.divest(divested.balance, divested.silver, newStake);
+			userInfo.divest(divested.balance, newStake);
 
 		});
 

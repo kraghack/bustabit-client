@@ -8,8 +8,8 @@ import engine from '../../core/engine'
 import userInfo from '../../core/user-info'
 import { formatBalance, isAmountInvalid } from '../../util/belt'
 import confirm from '../../util/confirmation'
-import { minInvest } from '../../util/config'
-import { realDilutionFee } from '../../util/math'
+import { minInvest, maxInvestLeverage } from '../../util/config'
+//import { realDilutionFee } from '../../util/math'
 
 class AddToBankroll extends PureComponent {
 	constructor(props) {
@@ -18,9 +18,12 @@ class AddToBankroll extends PureComponent {
 		this.state = {
 			amount: '',
 			amountError: null,
+			offsite: '0',
+			offsiteError: null,
 			submitting: false,
 			blocking: false, // Are we waiting on the game to be ended
-			touched: false
+			touched: false,
+			advanced: false // show offsite
 		};
 	}
 	componentDidMount(){
@@ -33,45 +36,93 @@ class AddToBankroll extends PureComponent {
 
 	onAmountChange(event) {
 		const amount = event.target.value;
-		const amountError = this.state.touched ? isAmountInvalid(amount, minInvest) : null;
+		const amountError = this.state.touched ? isAmountInvalid(amount, 0) : null;
 		this.setState({amount, amountError});
 	}
 
-	/// this returns true if the form is valid
-	validate(useAll) {
-		const amountError = useAll ? false : isAmountInvalid(this.state.amount, minInvest);
-		this.setState({
-			amountError
-		});
-		return !amountError;
+	onOffsiteChanged(event) {
+		const offsite = event.target.value;
+		const offsiteError = isAmountInvalid(offsite, 0);
+		this.setState({ offsite, offsiteError });
 	}
 
-	getDilutionFee(useAll) {
-		let amount;
-		if (useAll) {
-			amount = userInfo.balance;
-		}  else {
-			const n = Number.parseFloat(this.state.amount);
-			amount = n ? n : 0;
+	/// this returns true if the form is valid
+	validate() {
+		const useAllAmount = this.state.amount.trim() === '*';
+		let amountError = null;
+		if (!useAllAmount) {
+			amountError = isAmountInvalid(this.state.amount, 0);
+		}
+		const amount = useAllAmount ? Math.floor(userInfo.balance) : Math.round(Number.parseFloat(this.state.amount) * 100);
+
+
+		const useAllOffsite = this.state.offsite.trim() === '*';
+		let offsiteError = null;
+
+		let offsite = 0;
+		if (useAllOffsite) {
+			// TODO: really annoying calculation of how much they'd be putting in if they max leverage
+			//   this is just a hack job approximation
+			offsite = Math.max((userInfo.stake * engine.bankroll + amount) * maxInvestLeverage  - userInfo.offsite, 0)
+		} else {
+			offsiteError = isAmountInvalid(this.state.offsite, 0);
+			offsite = Math.round(Number.parseFloat(this.state.offsite) * 100)
 		}
 
-		return (realDilutionFee(amount, userInfo.stake, engine.bankroll)*100).toFixed(2);
+		if (!amountError && !offsiteError) {
+			if (amount + offsite < minInvest) {
+				amountError = 'You need to invest at least ' + formatBalance(minInvest) + ' bits';
+			}
+		}
+
+		this.setState({
+			amountError,
+			offsiteError
+		});
+
+
+		return !amountError && !offsiteError;
+	}
+
+	getDilutionFee() {
+		// TODO all this crap...
+
+		//
+		// const amount = this.state.amount.trim() === '*' ? userInfo.balance : Number.parseFloat(this.state.amount) * 100;
+		// const formatedAmount = useAllAmount ? 'all your ' : formatBalance(amount);
+		//
+		//
+		// const useAllOffsite = this.state.offsite.trim() === '*';
+		// const offsite = useAllOffsite ? Number.MAX_VALUE : Number.parseFloat(this.state.offsite) * 100;
+		//
+		// return (realDilutionFee(amount, userInfo.stake, engine.bankroll)*100).toFixed(2);
 	}
 
 
-	handleSubmit(event, useAll) {
+	handleSubmit(event) {
 		event.preventDefault();
 
-		if (!this.validate(useAll)) return;
+		if (!this.validate()) return;
 
 		this.setState({ submitting: true, touched: true });
 
-		let amount = useAll ? Number.MAX_VALUE : Number.parseFloat(this.state.amount) * 100;
-		let formatedAmount = useAll ? 'all your ' : formatBalance(amount);
+		const useAllAmount = this.state.amount.trim() === '*';
+
+		const amount = useAllAmount ? Number.MAX_VALUE : Number.parseFloat(this.state.amount) * 100;
+		const formatedAmount = useAllAmount ? 'all your ' : formatBalance(amount);
+
+
+		const useAllOffsite = this.state.offsite.trim() === '*';
+		const offsite = useAllOffsite ? Number.MAX_VALUE : Number.parseFloat(this.state.offsite) * 100;
+		let formatedOffsite = '';
+		if (offsite !== 0) {
+			formatedOffsite = useAllOffsite ? 'and max offsite' : 'and ' + formatBalance(offsite) + ' bits offsite'
+		}
 
 
 		const confirmMessage = 'Are you sure you want to add ' + formatedAmount +' bits to the bankroll? ' +
-			'You will need to pay ~' + this.getDilutionFee(useAll) + '% to previous investors in dilution fees!';
+			formatedOffsite +
+			'. You will need to pay ~10% to previous investors in dilution fees (although you will get some of this back, based on your final stake)!';
 
 
 		confirm(confirmMessage).then(
@@ -81,7 +132,7 @@ class AddToBankroll extends PureComponent {
 				const doAdd = () => {
 					if (this.unmounted) return;
 					this.setState({ blocking: false, submitting: true });
-					socket.send('invest', amount)
+					socket.send('invest', { amount,  offsite })
 						.then(() => {
 								if (this.unmounted) return;
 								this.setState({ blocking: false, submitting: false });
@@ -152,8 +203,43 @@ class AddToBankroll extends PureComponent {
 											 onChange={(event) => this.onAmountChange(event)}
 											 disabled={ disabled  }
 								/>
+								<InputGroup.Addon>
+									bits
+								</InputGroup.Addon>
 							</InputGroup>
+
 						</FormGroup>
+
+						{ this.state.advanced && <FormGroup>
+							<InputGroup>
+								<InputGroup.Addon>
+									Offsite:
+								</InputGroup.Addon>
+								<input type="number"
+											 placeholder="offsite"
+											 className="form-control"
+											 value={this.state.offsite}
+											 onChange={(event) => this.onOffsiteChanged(event)}
+											 disabled={ disabled  }
+								/>
+								<InputGroup.Addon>
+									bits
+								</InputGroup.Addon>
+							</InputGroup>
+						</FormGroup>}
+
+						{ !this.state.advanced &&
+						<a onClick={ () => {
+							this.setState({ advanced: true});
+
+							if (this.state.amount.trim() === '') {
+								this.setState({ amount: '0' })
+							}
+						}}>Show Advanced</a>
+						}
+
+
+
 
 						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
 							<button className='btn btn-success btn-lg' type="submit" disabled={  disabled }>
@@ -162,18 +248,6 @@ class AddToBankroll extends PureComponent {
 						</Col>
 					</Form>
 				</Col>
-				{ !disabled &&
-				<Col xs={24} sm={20}>
-					<Form horizontal onSubmit={(event) => this.handleSubmit(event, true)}>
-						<hr />
-						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-							<button className='btn btn-warning btn-lg' type="submit" disabled={ userInfo.balance < minInvest }>
-								Add All
-							</button>
-						</Col>
-					</Form>
-				</Col>
-				}
 				<Col sm={6} xs={12} style={{marginTop: '20px'}}>
 					<Link className="btn btn-info" to="/bankroll/history"><i className="fa fa-history"></i> History</Link>
 				</Col>

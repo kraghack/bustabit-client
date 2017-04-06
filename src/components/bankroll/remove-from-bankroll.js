@@ -17,9 +17,11 @@ class RemoveFromBankroll extends PureComponent {
     this.state = {
       amount: '',
       amountError: null,
+			offsite: '0',
 			submitting: false,
 			blocking: false, // Are we waiting on the game to be ended
-			touched: false
+			touched: false,
+			advanced: false // show the offsite
     };
   }
 	componentDidMount(){
@@ -37,8 +39,8 @@ class RemoveFromBankroll extends PureComponent {
   }
 
   /// this returns true if the form is valid
-  validate(useAll) {
-    const amountError = useAll ? false : isAmountInvalid(this.state.amount, minDivest);
+  validate() {
+    const amountError = isAmountInvalid(this.state.amount, minDivest);
     this.setState({
       amountError
     });
@@ -46,16 +48,18 @@ class RemoveFromBankroll extends PureComponent {
   }
 
 
-	handleSubmit(event, useAll) {
+	handleSubmit(event) {
 		event.preventDefault();
 
-		if (!this.validate(useAll)) return;
+		if (!this.validate()) return;
 
 		this.setState({ submitting: true, touched: true });
 
-		let amount = useAll ? Number.MAX_VALUE : Number.parseFloat(this.state.amount) * 100;
-		let formatedAmount = useAll ? 'all your ' : formatBalance(amount);
+		const useAll = this.state.amount.trim() === '*';
 
+		const amount = useAll ? Number.MAX_VALUE : Number.parseFloat(this.state.amount) * 100;
+
+		let formatedAmount = useAll ? 'all your ' : formatBalance(amount);
 
 		const confirmMessage = 'Are you sure you want to remove ' + formatedAmount +' bits from the bankroll?';
 
@@ -150,12 +154,35 @@ class RemoveFromBankroll extends PureComponent {
               </InputGroup>
             </FormGroup>
 
+						{ this.state.advanced && <FormGroup>
+							<InputGroup>
+								<InputGroup.Addon>
+									Offsite:
+								</InputGroup.Addon>
+								<input type="number"
+											 placeholder="offsite"
+											 className="form-control"
+											 value={this.state.offsite}
+											 onChange={(event) => this.onOffsiteChanged(event)}
+											 disabled={ disabled  }
+								/>
+								<InputGroup.Addon>
+									bits
+								</InputGroup.Addon>
+							</InputGroup>
+						</FormGroup>}
+
+						{ !this.state.advanced &&
+						<a onClick={ () => this.setState({ advanced: true}) }>Show Advanced</a>
+						}
+
 						<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
 							<button className='btn btn-success btn-lg' type="submit" disabled={  disabled || engine.bankroll * userInfo.stake < minDivest }>
 								{ buttonContents }
 							</button>
 						</Col>
           </Form>
+
 				</Col>
 				{ !disabled &&
 				<Col xs={24} sm={20}>

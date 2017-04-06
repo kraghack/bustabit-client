@@ -21,12 +21,6 @@ class FaqMenu extends PureComponent {
               <Link to="/faq/what-is-a-bit">What is a bit?</Link>
             </li>
             <li role="presentation">
-              <Link to="/faq/what-is-silver">What is silver?</Link>
-            </li>
-            <li role="presentation">
-              <Link to="/faq/what-is-valor">What is valor?</Link>
-            </li>
-            <li role="presentation">
               <Link to="/faq/house-edge">What is the house edge?</Link>
             </li>
             <li role="presentation">
@@ -87,21 +81,6 @@ class FaqMenu extends PureComponent {
             </li>
             <li role="presentation">
               <Link to="/faq/faucet">How can I get free bits from the faucet?</Link>
-            </li>
-            <li role="presentation">
-              <Link to="/faq/how-to-fuse">How can I fuse valor with silver?</Link>
-            </li>
-          </ul>
-        </Col>
-
-        <Col sm={24} xs={24} style={{marginTop: '20px'}}>
-          <h5 style={{ textTransform: 'uppercase', letterSpacing: '3px'}}>Trading</h5>
-          <ul className="nav nav-pills nav-stacked">
-            <li role="presentation">
-              <Link to="/faq/how-to-trade">How can I trade in game?</Link>
-            </li>
-            <li role="presentation">
-              <Link to="/faq/trade-fee">What is the trade fee?</Link>
             </li>
           </ul>
         </Col>
