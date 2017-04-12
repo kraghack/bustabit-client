@@ -26,26 +26,43 @@ class BankrollOverview extends PureComponent {
           </Col>
         </div>
         <Row>
-        <Col sm={24} xs={24} style={{marginTop: '20px'}}>
-          <p>Join the site's bankroll! Make and lose money with the site.</p>
-        </Col>
-        <Col sm={12} xs={24}>
-          <Col xs={16}><span className="key-muted">Site's Bankroll: </span></Col>
-          <Col xs={8}><span className="bold">{ formatBalance(bankroll) } bits</span></Col>
-        </Col>
-        <Col sm={12} xs={24}>
-          <Col xs={16}><span className="key-muted">Site's Profit: </span></Col>
-          <Col xs={8}><span className="bold">{ formatBalance(engine.bankrollProfit()) } bits</span></Col>
-        </Col>
-      </Row>
-        <Row>
           <Col sm={12} xs={24}>
             <Col xs={16}><span className="key-muted">Your Bankroll: </span></Col>
             <Col xs={8}><span className="bold">{ formatBalance(bankroll * stake) } bits</span></Col>
           </Col>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Site's Bankroll: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll) } bits</span></Col>
+					</Col>
+        </Row>
+				<Row>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Your Offsite: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(userInfo.offsite) } bits</span></Col>
+					</Col>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Site's Offsite: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(engine.offsite) } bits</span></Col>
+					</Col>
+				</Row>
+				<Row>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Your Onsite: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll * stake - userInfo.offsite) } bits</span></Col>
+					</Col>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Site's Onsite: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll - engine.offsite) } bits</span></Col>
+					</Col>
+				</Row>
+        <Row>
+					<Col sm={12} xs={24}>
+						<Col xs={16}><span className="key-muted">Your Investing Profit: </span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(divested - invested +  bankroll * stake) } bits</span></Col>
+					</Col>
           <Col sm={12} xs={24}>
-            <Col xs={16}><span className="key-muted">Your Investing Profit: </span></Col>
-            <Col xs={8}><span className="bold">{ formatBalance(divested - invested +  bankroll * stake) } bits</span></Col>
+            <Col xs={16}><span className="key-muted">Site's Profit: </span></Col>
+            <Col xs={8}><span className="bold">{ formatBalance(engine.bankrollProfit()) } bits</span></Col>
           </Col>
         </Row>
         <Row>

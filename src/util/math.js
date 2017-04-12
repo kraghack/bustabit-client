@@ -55,8 +55,8 @@ export function growthFunc(ms) {
 	return Math.pow(2, r * ms);
 }
 
-// returns as a number
-export function realDilutionFee(amount, oldStake, bankroll) {
+// returns as a multiplier
+export function realDilutionFeeFactor(amount, oldStake, bankroll) {
 	// derived using ...
 	// const stake = (o * p + (1-f)*a) / (p + (1-f) * a);
 	// const make = stake * f * a;
