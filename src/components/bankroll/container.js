@@ -18,8 +18,7 @@ class Bankroll extends PureComponent {
 			<div style={{minHeight: '40vh', marginBottom: '20px'}}>
 				<ul className="nav nav-tabs nav-justified">
 					<Tab to="/bankroll/overview"><span>Overview</span></Tab>
-					<Tab to="/bankroll/add-to-bankroll"><span>Add</span></Tab>
-					<Tab to="/bankroll/remove-from-bankroll"><span>Remove</span></Tab>
+					<Tab to="/bankroll/change-bankroll"><span>Change</span></Tab>
 					<Tab to="/bankroll/history"><span>History</span></Tab>
 				</ul>
 				{ body }

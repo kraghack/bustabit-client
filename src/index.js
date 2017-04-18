@@ -69,8 +69,7 @@ import TipHistory from './components/transactions/tip-history'
 
 import Bankroll from './components/bankroll/container'
 import BankrollOverview from './components/bankroll/overview'
-import AddToBankroll from './components/bankroll/add-to-bankroll'
-import RemoveFromBankroll from './components/bankroll/remove-from-bankroll'
+import AddToBankroll from './components/bankroll/change-bankroll'
 import BankrollHistory from './components/bankroll/history'
 
 import AddFriend from './components/add-friend'
@@ -148,8 +147,7 @@ render(
 
           <Route components={ {title: createTitleComponent("Bankroll"), body: Bankroll} } >
             <Route path="bankroll/overview" components={{ body: BankrollOverview }}/>
-            <Route path="bankroll/add-to-bankroll" components={ { body: AddToBankroll } }/>
-            <Route path="bankroll/remove-from-bankroll" components={ { body: RemoveFromBankroll} }/>
+            <Route path="bankroll/change-bankroll" components={ { body: AddToBankroll } }/>
             <Route path="bankroll/history" components={ { body: BankrollHistory} }/>
           </Route>
 
