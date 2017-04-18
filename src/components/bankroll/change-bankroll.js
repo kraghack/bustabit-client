@@ -37,13 +37,13 @@ class ChangeBankroll extends PureComponent {
 	onBalanceChange(event) {
 		const balance = event.target.value.trim();
 
-		const balanceError = this.state.touched && balance !== '*' && balance !== '-*' ? isAmountInvalid(balance, 0) : null;
+		const balanceError = this.state.touched && balance !== '*' && balance !== '-*' ? isAmountInvalid(balance, Number.MIN_SAFE_INTEGER) : null;
 		this.setState({balance, balanceError});
 	}
 
 	onOffsiteChanged(event) {
 		const offsite = event.target.value.trim();
-		const offsiteError = offsite !== '*' && offsite !== '-*' ?  isAmountInvalid(offsite, 0) : null;
+		const offsiteError = offsite !== '*' && offsite !== '-*' ?  isAmountInvalid(offsite, Number.MIN_SAFE_INTEGER) : null;
 		this.setState({ offsite, offsiteError });
 	}
 
@@ -56,7 +56,11 @@ class ChangeBankroll extends PureComponent {
 
 		let balanceError = null;
 		if (!useAllBalance && !useNothingBalance) {
-			balanceError = isAmountInvalid(balance, minInvest);
+			balanceError = isAmountInvalid(balance, Number.MIN_SAFE_INTEGER);
+			console.log('iai got: ', balanceError);
+			if (!balanceError && Math.abs(Number.parseFloat(balance) * 100) < minInvest) {
+				balanceError = 'Must change bankroll by more than ' + formatBalance(minInvest) + ' bits'
+			}
 		}
 
 		// TODO: validate the *  against their balance?
@@ -69,7 +73,10 @@ class ChangeBankroll extends PureComponent {
 		let offsiteError = null;
 
 		if (!useAllOffsite && !useNothingOffsite) {
-			offsiteError =  isAmountInvalid(offsite, minInvest);
+			offsiteError =  isAmountInvalid(offsite, Number.MIN_SAFE_INTEGER);
+			if (!offsiteError && Math.abs(Number.parseFloat(offsite) * 100) < minInvest) {
+				offsiteError = 'Must change bankroll by more than ' + formatBalance(minInvest) + ' bits'
+			}
 		}
 		// TODO: validate the *  against their balance?
 
@@ -114,10 +121,10 @@ class ChangeBankroll extends PureComponent {
 
 		if (this.state.balance === '*') {
 			useAllBalance = true;
-			balance = Number.MAX_VALUE;
+			balance = Number.MAX_SAFE_INTEGER
 		} else if (this.state.balance === '-*') {
 			useAllBalance = true;
-			balance = Number.MIN_VALUE
+			balance = Number.MIN_SAFE_INTEGER;
 		} else {
 			useAllBalance = false;
 			balance = Math.round(Number.parseFloat(this.state.balance) * 100)
@@ -131,10 +138,10 @@ class ChangeBankroll extends PureComponent {
 		let offsite;
 		if (this.state.offsite === '*') {
 			useAllOffsite = true;
-			offsite = Number.MAX_VALUE;
+			offsite = Number.MAX_SAFE_INTEGER;
 		} else if (this.state.offsite === '-*') {
 			useAllOffsite = true;
-			offsite = Number.MIN_VALUE
+			offsite = Number.MIN_SAFE_INTEGER;
 		} else {
 			useAllOffsite = false;
 			offsite = Math.round(Number.parseFloat(this.state.offsite) * 100)

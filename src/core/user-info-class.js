@@ -158,13 +158,13 @@ export default class UserInfo extends EventEmitter {
 		this.emit('BALANCE_CHANGED', -amount);
 	}
 
-  invest(amount, newStake) {
-		this.highWater += amount;
-		this.stake = newStake;
-		this.invested += amount;
+  invest(balanceChange, stakeChange, highWaterChange) {
+		this.highWater += highWaterChange;
+		this.stake = stakeChange;
+		this.invested += balanceChange;
 
 		// we have to call this last, because it has a sync emit:
-		this.changeBalance(-amount);
+		this.changeBalance(balanceChange);
 
 		this.emit('BANKROLL_STATS_CHANGED');
 	}

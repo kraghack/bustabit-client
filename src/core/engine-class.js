@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3';
 
-import { dilutionFee }  from '../util/config'
 import { growthFunc } from '../util/math'
 import {  objectEntries } from '../util/belt'
 
@@ -67,7 +66,6 @@ export default class Engine extends EventEmitter {
 		this.placingBet = false;
 
 
-
 		/** True if cashing out.. */
 		this.cashingOut = false;
 
@@ -97,7 +95,6 @@ export default class Engine extends EventEmitter {
 
 		this.bankroll = 0;
 		this.invested = 0; // how much in total has been invested
-		this.divested = 0; // how much in total has been divested
 
 		// an array of { gameId, bust, hash, wager, cashOut }
 		this.history = [];
@@ -122,10 +119,10 @@ export default class Engine extends EventEmitter {
 
 			// Every time a game is starting, we check if there's a queued bet
 			if (this.next) {
-				const { wager, payout, isAuto, resolve, reject } = this.next;
+				const {wager, payout, isAuto, resolve, reject} = this.next;
 
 				this.next = null;
-				socket.send('bet', { wager, payout, isAuto }).then(resolve, reject);
+				socket.send('bet', {wager, payout, isAuto}).then(resolve, reject);
 			}
 
 			this.emit('BANKROLL_CHANGED');
@@ -211,7 +208,7 @@ export default class Engine extends EventEmitter {
 					const wager = this.playing.get(uname);
 
 					this.playing.delete(uname);
-					this.cashOuts.push({ uname, cashedAt, wager });
+					this.cashOuts.push({uname, cashedAt, wager});
 
 
 					if (uname === userInfo.uname) {
@@ -224,7 +221,7 @@ export default class Engine extends EventEmitter {
 					}
 
 					// A simpler event for scripts
-					this.emit('CASHED_OUT', { uname, cashedAt, wager });
+					this.emit('CASHED_OUT', {uname, cashedAt, wager});
 				}
 
 			}
@@ -237,45 +234,23 @@ export default class Engine extends EventEmitter {
 
 
 // we invested,
-		socket.on('youInvested', amount => {
+		socket.on('invested', details => {
 
-			const { stake } = userInfo;
-			const { bankroll } = this;
+			const bankrollChange = -(details.balance + details.commission);
 
-			let scaler = 1 - dilutionFee;
-			let newStake = (scaler * amount + stake * bankroll) / (bankroll + scaler * amount);
+			this.bankroll += bankrollChange;
+			this.invested += bankrollChange;
 
-			this.bankroll += amount;
-			this.invested += amount;
+			userInfo.invest(details.balance, details.stake, details.highWater);
 
-			this.emit('BANKROLL_CHANGED');
-			userInfo.invest(amount, newStake);
-		});
-
-// someone else invested
-		socket.on('invested', amount => {
-			this.bankroll += amount;
-			this.invested += amount;
 			this.emit('BANKROLL_CHANGED');
 		});
 
-
-// we divested
-		socket.on('youDivested', divested => {
-			const { stake } = userInfo;
-			const { bankroll } = this;
-
-
-			const total = divested.balance;
-			const newBankroll = bankroll - total;
-
-			let newStake = newBankroll > 0 ? (stake * bankroll - total) / newBankroll : 0;
-
-			this.bankroll -= total;
-			this.divested += total;
+		// someone else invested
+		socket.on('investment', details => {
+			this.bankroll += details.bankrollBalance;
+			this.invested += details.bankrollBalance;
 			this.emit('BANKROLL_CHANGED');
-			userInfo.divest(divested.balance, newStake);
-
 		});
 
 	}

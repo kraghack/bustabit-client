@@ -49,7 +49,7 @@ export function isAmountInvalid(amount, minAmount, maxAmount) {
 	if (amount === '')
 		return 'You must enter an amount.';
 
-	const isNumberRegex = /^[1-9]\d*$/; // handle against leading zeros
+	const isNumberRegex = /^-?[1-9]\d*$/; // handle against leading zeros
 
 	if (!isNumberRegex.test(amount) && amount !== '0')
 		return 'The amount should be a whole number.';
