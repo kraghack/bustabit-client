@@ -46,13 +46,12 @@ class BankrollHistory extends PureComponent {
 	results() {
 		return this.state.history.map(d => {
 
+			// these values are from the users perspective, so let's map it to the bankrolls
 
 			return <tr key={ d.id }>
 				<td>{ d.created }</td>
-				<td>{ formatBalance(d.preBankroll) } bits</td>
-				<td>{ d.amount > 0 || d.offsite ? 'Added' : 'Removed' }</td>
-				<td>{ formatBalance(d.amount) } bits</td>
-				<td>{ formatBalance(d.offsite) } bits </td>
+				<td>{ formatBalance(-(d.balanceChange + d.commission)) } bits</td>
+				<td>{ formatBalance(-d.offsiteChange) } bits </td>
 			</tr>
 		});
 	}
@@ -68,9 +67,7 @@ class BankrollHistory extends PureComponent {
             <thead className="table-header">
             <tr>
               <th>Time</th>
-							<th>Bankroll At Time</th>
-							<th>Operation</th>
-              <th>Amount</th>
+              <th>Balance</th>
 							<th>Offsite</th>
             </tr>
             </thead>

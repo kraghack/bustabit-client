@@ -57,7 +57,6 @@ class ChangeBankroll extends PureComponent {
 		let balanceError = null;
 		if (!useAllBalance && !useNothingBalance) {
 			balanceError = isAmountInvalid(balance, Number.MIN_SAFE_INTEGER);
-			console.log('iai got: ', balanceError);
 			if (!balanceError && Math.abs(Number.parseFloat(balance) * 100) < minInvest) {
 				balanceError = 'Must change bankroll by more than ' + formatBalance(minInvest) + ' bits'
 			}
@@ -222,7 +221,7 @@ class ChangeBankroll extends PureComponent {
 				<Col xs={24} sm={20}>
 					<h4>Change Bankroll:</h4>
 					<p className="text-muted">
-						Use positive values to add, negative values to remove<br/>
+						Use positive values to add to the bankroll, and negative values to remove<br/>
 					</p>
 					<br/>
 					<Form horizontal onSubmit={(event) => this.handleSubmit(event, false)}>
