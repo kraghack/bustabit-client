@@ -4,7 +4,7 @@ import {  browserHistory } from 'react-router'
 import socket from '../../socket'
 import refresher from '../../refresher'
 import notification from '../../core/notification'
-import engine from '../../core/engine'
+import bankroll from '../../core/bankroll'
 import userInfo from '../../core/user-info'
 import { formatBalance, isAmountInvalid } from '../../util/belt'
 import confirm from '../../util/confirmation'
@@ -294,5 +294,5 @@ class ChangeBankroll extends PureComponent {
 
 export default refresher(ChangeBankroll,
 	[userInfo, 'BANKROLL_STATS_CHANGED', 'UNAME_CHANGED'],
-	[engine, 'BANKROLL_CHANGED']
+	[bankroll, 'BANKROLL_CHANGED']
 );

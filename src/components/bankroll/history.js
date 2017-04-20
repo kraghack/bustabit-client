@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import { Table, Col, Row } from 'react-bootstrap'
-import engine   from '../../core/engine'
 import refresher from '../../refresher'
 import userInfo from '../../core/user-info'
 import socket from '../../socket'
@@ -20,11 +19,11 @@ class BankrollHistory extends PureComponent {
 
 	componentWillMount() {
 		this.init();
-		socket.on('bankrollChanged', this.init);
+		socket.on('invested', this.init);
 	}
 
 	componentWillUnmount() {
-		socket.removeListener('bankrollChanged', this.init);
+		socket.removeListener('invested', this.init);
 		this.unmounted = true;
 
 	}
@@ -50,7 +49,7 @@ class BankrollHistory extends PureComponent {
 
 			return <tr key={ d.id }>
 				<td>{ d.created }</td>
-				<td>{ formatBalance(-(d.balanceChange + d.commission)) } bits</td>
+				<td>{ formatBalance(d.bankrollBalanceChange) } bits</td>
 				<td>{ formatBalance(-d.offsiteChange) } bits </td>
 			</tr>
 		});
@@ -85,5 +84,4 @@ class BankrollHistory extends PureComponent {
 
 export default refresher(BankrollHistory,
 	[userInfo, 'BANKROLL_STATS_CHANGED', 'UNAME_CHANGED'],
-	[engine, 'BANKROLL_CHANGED']
 );

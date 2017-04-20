@@ -1,15 +1,15 @@
 import React, {  Component } from 'react';
 import refresher from '../refresher'
-import engine from '../core/engine'
+import bankroll from '../core/bankroll'
 import { formatBalance } from '../util/belt'
 
 
 class MaxBet extends Component {
 	render() {
-		return <span>{ formatBalance(engine.getMaxBet()) }&nbsp;bits</span>
+		return <span>{ formatBalance(bankroll.getMaxBet()) }&nbsp;bits</span>
 	}
 }
 
 export default refresher(MaxBet,
-	[engine, 'BANKROLL_CHANGED']
+	[bankroll, 'BANKROLL_CHANGED']
 )

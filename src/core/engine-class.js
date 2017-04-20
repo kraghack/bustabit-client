@@ -6,7 +6,6 @@ import {  objectEntries } from '../util/belt'
 
 // POSSIBLE EVENTS:
 //  ... GAME_STATE_CHANGED
-//  ... BANKROLL_CHANGED
 //  ... BET_STATUS_CHANGED  (anything to do with placing new bets...)
 //  ... PLAYERS_CHANGED     (anything to do with the player list..)
 //  ... HISTORY_CHANGED (new item in the history)
@@ -93,7 +92,7 @@ export default class Engine extends EventEmitter {
 		/** Animation Events triggers**/
 		this.nyan = false;
 
-		this.bankroll = 0;
+		this.pieces = 0;
 		this.invested = 0; // how much in total has been invested
 
 		// an array of { gameId, bust, hash, wager, cashOut }
@@ -110,12 +109,10 @@ export default class Engine extends EventEmitter {
 			this.cashedAt = 0;
 
 			this.gameState = 'GAME_STARTING';
-			this.bankroll = info.bankroll;
 
 			const timeTillStart = 5000; // TODO: this should be sent by the server?
 
 			this.startTime = Date.now() + timeTillStart;
-
 
 			// Every time a game is starting, we check if there's a queued bet
 			if (this.next) {
@@ -125,7 +122,6 @@ export default class Engine extends EventEmitter {
 				socket.send('bet', {wager, payout, isAuto}).then(resolve, reject);
 			}
 
-			this.emit('BANKROLL_CHANGED');
 			this.emit('PLAYERS_CHANGED');
 			this.emit('GAME_STATE_CHANGED');
 			this.emit('GAME_STARTING', info);
@@ -151,8 +147,7 @@ export default class Engine extends EventEmitter {
 			this.forced = info.forced;
 			this.lastHash = info.hash;
 
-			// TODO: .... handle bankroll info..
-
+			// TODO: adjust bankroll...
 
 			this.history.unshift({
 				gameId: this.gameId,
@@ -229,43 +224,13 @@ export default class Engine extends EventEmitter {
 			this.emit('PLAYERS_CHANGED');
 		});
 
-
-// ---
-
-
-// we invested,
-		socket.on('invested', details => {
-
-			const bankrollChange = -(details.balance + details.commission);
-
-			this.bankroll += bankrollChange;
-			this.invested += bankrollChange;
-
-			userInfo.invest(details.balance, details.stake, details.highWater);
-
-			this.emit('BANKROLL_CHANGED');
-		});
-
-		// someone else invested
-		socket.on('investment', details => {
-			this.bankroll += details.bankrollBalance;
-			this.invested += details.bankrollBalance;
-			this.emit('BANKROLL_CHANGED');
-		});
-
 	}
 
 	_getElapsedTime() {
 		return Date.now() - this.startTime;
 	}
 
-	getMaxBet() {
-		return this.bankroll * 0.002; // TODO: use config..
-	}
 
-	getMaxProfit() {
-		return this.bankroll * 0.01; // TODO: use the config
-	}
 
 	getElapsedTimeWithLag() {
 		if(this.gameState === 'GAME_IN_PROGRESS') {
@@ -345,9 +310,7 @@ export default class Engine extends EventEmitter {
 		this.emit('BET_STATUS_CHANGED');
 	}
 
-	bankrollProfit() {
-		return this.invested - this.divested - this.bankroll;
-	}
+
 
 	initialize(info) {
 		if (!(info.playing instanceof Map)) {
@@ -361,7 +324,6 @@ export default class Engine extends EventEmitter {
 		}
 
 		this.emit('GAME_STATE_CHANGED');
-		this.emit('BANKROLL_CHANGED');
 		this.emit('PLAYERS_CHANGED');
 		this.emit('BET_STATUS_CHANGED');
 		this.emit('HISTORY_CHANGED');

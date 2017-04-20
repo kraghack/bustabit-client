@@ -99,7 +99,7 @@ export default class UserInfo extends EventEmitter {
 		this.profit = 0;
 		this.profitATH = 0;
 		this.profitATL = 0;
-		this.stake = 0;
+		this.pieces = 0;
 		this.uname = '';
 		this.unpaidDeposits = 0;
 		this.wagered = 0.0;
@@ -160,7 +160,7 @@ export default class UserInfo extends EventEmitter {
 
   invest(balanceChange, stakeChange, highWaterChange) {
 		this.highWater += highWaterChange;
-		this.stake = stakeChange;
+		this.stake += stakeChange;
 		this.invested += balanceChange;
 
 		// we have to call this last, because it has a sync emit:
