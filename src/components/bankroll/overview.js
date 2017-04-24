@@ -12,7 +12,6 @@ import refresher from '../../refresher'
 class BankrollOverview extends PureComponent {
 
   render() {
-    const { invested } = userInfo;
 
     const stake = userInfo.pieces / bankroll.pieces;
 
@@ -49,21 +48,21 @@ class BankrollOverview extends PureComponent {
 				<Row>
 					<Col sm={12} xs={24}>
 						<Col xs={16}><span className="key-muted">Your Onsite: </span></Col>
-						<Col xs={8}><span className="bold">{ formatBalance(bankroll * stake - userInfo.offsite) } bits</span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll.balance * stake - userInfo.offsite) } bits</span></Col>
 					</Col>
 					<Col sm={12} xs={24}>
 						<Col xs={16}><span className="key-muted">Site's Onsite: </span></Col>
-						<Col xs={8}><span className="bold">{ formatBalance(bankroll - bankroll.offsite) } bits</span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll.balance - bankroll.offsite) } bits</span></Col>
 					</Col>
 				</Row>
         <Row>
 					<Col sm={12} xs={24}>
 						<Col xs={16}><span className="key-muted">Your Investing Profit: </span></Col>
-						<Col xs={8}><span className="bold">{ formatBalance(invested -  bankroll.balance * stake) } bits</span></Col>
+						<Col xs={8}><span className="bold">{ formatBalance(bankroll.balance * stake - userInfo.invested) } bits</span></Col>
 					</Col>
           <Col sm={12} xs={24}>
             <Col xs={16}><span className="key-muted">Site's Profit: </span></Col>
-            <Col xs={8}><span className="bold">?  bits</span></Col>
+            <Col xs={8}><span className="bold">{ formatBalance(bankroll.balance - bankroll.invested) } bits</span></Col>
           </Col>
         </Row>
         <Row>

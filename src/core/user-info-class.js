@@ -66,7 +66,6 @@ export default class UserInfo extends EventEmitter {
 				// notification.setMessage("incoming deposit detected")
 			}
 
-
 		});
 
 		socket.on('tipped', d => {
@@ -82,6 +81,10 @@ export default class UserInfo extends EventEmitter {
 				this.emit('BALANCE_CHANGED');
 			}
 		});
+
+		socket.on('withdrawalQueued', ({ amount, fee }) => {
+			this.changeBalance(-amount - fee);
+		})
 
   }
 
