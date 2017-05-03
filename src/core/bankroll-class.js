@@ -22,6 +22,7 @@ export default class Bankroll extends EventEmitter {
 			this.balance += details.bankrollBalanceChange;
 			this.invested += details.bankrollBalanceChange;
 			this.pieces += details.piecesChange;
+			this.offsite += details.offsiteChange;
 			this.emit('BANKROLL_CHANGED');
 		};
 

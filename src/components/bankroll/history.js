@@ -49,8 +49,8 @@ class BankrollHistory extends PureComponent {
 
 			return <tr key={ d.id }>
 				<td>{ d.created }</td>
-				<td>{ formatBalance(d.bankrollBalanceChange) } bits</td>
-				<td>{ formatBalance(-d.offsiteChange) } bits </td>
+				<td>{ formatBalance(-d.userBalanceChange) } bits</td>
+				<td>{ formatBalance(d.offsiteChange) } bits </td>
 			</tr>
 		});
 	}

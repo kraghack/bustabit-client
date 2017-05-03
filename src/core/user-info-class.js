@@ -84,7 +84,19 @@ export default class UserInfo extends EventEmitter {
 
 		socket.on('withdrawalQueued', ({ amount, fee }) => {
 			this.changeBalance(-amount - fee);
-		})
+		});
+
+
+		const onInvested = (details) => {
+			this.balance += details.userBalanceChange;
+			this.invested += details.userBalanceChange;
+			this.pieces += details.piecesChange;
+			this.offsite += details.offsiteChange;
+			this.emit('BANKROLL_CHANGED');
+		};
+
+
+		socket.on('invested', onInvested);
 
   }
 
@@ -97,7 +109,6 @@ export default class UserInfo extends EventEmitter {
 		this.emergencyWithdrawalAddress = '';
 		this.hasMFA = false;
 		this.kind = 'MEMBER'; // Can be MEMBER | TRUSTED | ADMIN
-		this.highWater = 0;
 		this.invested = 0;
 		this.profit = 0;
 		this.profitATH = 0;
