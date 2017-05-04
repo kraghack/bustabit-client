@@ -5,7 +5,7 @@ import EventEmitter from 'eventemitter3';
 // events:
 //  UNAME_CHANGED:    called during login/log out the uname changes
 //  BALANCE_CHANGED:  the balance has changed
-//  BANKROLL_STATS_CHANGED: The bankroll{Stake, HighWater}, invested or divested changed
+//  BANKROLL_STATS_CHANGED: The bankroll, invested or divested changed
 //  HAS_MFA_CHANGED
 //  EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED
 //  EMAIL_CHANGED
@@ -88,11 +88,13 @@ export default class UserInfo extends EventEmitter {
 
 
 		const onInvested = (details) => {
-			this.balance += details.userBalanceChange;
 			this.invested += details.userBalanceChange;
 			this.pieces += details.piecesChange;
 			this.offsite += details.offsiteChange;
-			this.emit('BANKROLL_CHANGED');
+
+			this.changeBalance(details.userBalanceChange);
+			
+			this.emit('BANKROLL_STATS_CHANGED');
 		};
 
 
