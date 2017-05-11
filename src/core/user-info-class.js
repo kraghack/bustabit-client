@@ -88,12 +88,12 @@ export default class UserInfo extends EventEmitter {
 
 
 		const onInvested = (details) => {
-			this.invested += details.userBalanceChange;
+			this.invested += details.bankrollBalanceChange;
 			this.pieces += details.piecesChange;
 			this.offsite += details.offsiteChange;
 
 			this.changeBalance(details.userBalanceChange);
-			
+
 			this.emit('BANKROLL_STATS_CHANGED');
 		};
 

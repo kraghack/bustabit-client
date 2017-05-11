@@ -44,6 +44,7 @@ class BankrollHistory extends PureComponent {
 
 	results() {
 		return this.state.history.map(d => {
+			console.log({d});
 
 			// these values are from the users perspective, so let's map it to the bankrolls
 
@@ -57,25 +58,29 @@ class BankrollHistory extends PureComponent {
 
   render() {
     return (
-      <Row>
-        <Col sm={18} xs={12} style={{marginTop: '20px'}}>
-          <h4 style={{ letterSpacing: '3px'}}>YOUR BANKROLL HISTORY</h4>
-        </Col>
-        <Col xs={24} style={{marginTop: '10px'}}>
-          <Table striped bordered condensed hover responsive className="history-table">
-            <thead className="table-header">
-            <tr>
-              <th>Time</th>
-              <th>Balance</th>
-							<th>Offsite</th>
-            </tr>
-            </thead>
-            <tbody>
-						{ this.results() }
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+    	<div>
+				<Row>
+					<Col sm={18} xs={12} style={{marginTop: '20px'}}>
+						<h4 style={{ letterSpacing: '3px'}}>YOUR BANKROLL HISTORY</h4>
+					</Col>
+					<Col xs={24} style={{marginTop: '10px'}}>
+						<Table striped bordered condensed hover responsive className="history-table">
+							<thead className="table-header">
+							<tr>
+								<th>Time</th>
+								<th>Balance</th>
+								<th>Offsite</th>
+							</tr>
+							</thead>
+							<tbody>
+							{ this.results() }
+							</tbody>
+						</Table>
+					</Col>
+				</Row>
+				<p className="text-muted">Positive values indicate putting money in the bankroll. Negative values, taking money out.</p>
+			</div>
+
 
     )
   }
