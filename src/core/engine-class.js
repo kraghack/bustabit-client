@@ -186,6 +186,10 @@ export default class Engine extends EventEmitter {
 
 
 				userInfo.changeBalance(-bet.wager);
+
+				if (bet.newBalance !== undefined)
+					userInfo.balanceSync(bet.newBalance);
+
 				this.emit('BET_STATUS_CHANGED');
 			}
 

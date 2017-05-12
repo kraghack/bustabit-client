@@ -85,16 +85,7 @@ export default class UserInfo extends EventEmitter {
 			this.changeBalance(-amount - fee);
 		});
 
-		socket.on('balanceSync', newBalance => {
-			// The balance should only ever really be out of sync once at the start (or something else is not getting sync'd)
 
-			if (newBalance !== this.balance) {
-				console.warn('Balance was out of sync by: ', newBalance - this.balance);
-				this.balance = newBalance;
-				this.emit('BALANCE_CHANGED');
-			}
-
-		});
 
 
 		const onInvested = (details) => {
@@ -129,6 +120,15 @@ export default class UserInfo extends EventEmitter {
 		this.uname = '';
 		this.unpaidDeposits = 0;
 		this.wagered = 0.0;
+	}
+
+	balanceSync(newBalance) {
+		// The balance should only ever really be out of sync once at the start (or something else is not getting sync'd)
+		if (newBalance !== this.balance) {
+			console.warn('Balance was out of sync by: ', newBalance - this.balance);
+			this.balance = newBalance;
+			this.emit('BALANCE_CHANGED');
+		}
 	}
 
 	isTrusted() {
