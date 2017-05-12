@@ -185,12 +185,11 @@ export default class Engine extends EventEmitter {
 				this.wager = bet.wager;
 
 
-				userInfo.changeBalanceFromBet(bet.wager);
+				userInfo.changeBalance(-bet.wager);
 				this.emit('BET_STATUS_CHANGED');
 			}
 
 			this.emit('PLAYERS_CHANGED');
-
 			this.emit('BET_PLACED', bet)
 		});
 

@@ -71,19 +71,29 @@ export default class UserInfo extends EventEmitter {
 		socket.on('tipped', d => {
 			if (d.toUname === this.uname) {
 				console.assert(typeof d.amount === 'number');
-				this.balance += d.amount;
-				this.emit('BALANCE_CHANGED');
+				this.changeBalance(d.amount);
 			}
 
 			if (d.uname === this.uname)  {
 				console.assert(typeof d.amount === 'number');
-				this.balance -= (d.amount + d.fee);
+				this.changeBalance(-d.amount - d.fee);
 				this.emit('BALANCE_CHANGED');
 			}
 		});
 
 		socket.on('withdrawalQueued', ({ amount, fee }) => {
 			this.changeBalance(-amount - fee);
+		});
+
+		socket.on('balanceSync', newBalance => {
+			// The balance should only ever really be out of sync once at the start (or something else is not getting sync'd)
+
+			if (newBalance !== this.balance) {
+				console.warn('Balance was out of sync by: ', newBalance - this.balance);
+				this.balance = newBalance;
+				this.emit('BALANCE_CHANGED');
+			}
+
 		});
 
 
@@ -113,8 +123,8 @@ export default class UserInfo extends EventEmitter {
 		this.kind = 'MEMBER'; // Can be MEMBER | TRUSTED | ADMIN
 		this.invested = 0;
 		this.profit = 0;
-		this.profitATH = 0;
-		this.profitATL = 0;
+		this.profitATH = 0; // TODO: ...
+		this.profitATL = 0; // TODO: ...
 		this.pieces = 0;
 		this.uname = '';
 		this.unpaidDeposits = 0;
@@ -164,15 +174,8 @@ export default class UserInfo extends EventEmitter {
   changeBalance(amount) {
   	if (amount === 0) return;
     this.balance += amount;
-    this.emit('BALANCE_CHANGED', amount);
+    this.emit('BALANCE_CHANGED');
   }
-
-  // this also adds valor, but also probably will do something
-	// different for the animations point of view (as it's not really a loss)
-  changeBalanceFromBet(amount) {
-		this.balance -= amount;
-		this.emit('BALANCE_CHANGED', -amount);
-	}
 
   invest(balanceChange, stakeChange, highWaterChange) {
 		this.highWater += highWaterChange;
