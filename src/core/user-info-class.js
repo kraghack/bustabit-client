@@ -177,8 +177,7 @@ export default class UserInfo extends EventEmitter {
     this.emit('BALANCE_CHANGED');
   }
 
-  invest(balanceChange, stakeChange, highWaterChange) {
-		this.highWater += highWaterChange;
+  invest(balanceChange, stakeChange) {
 		this.stake += stakeChange;
 		this.invested += balanceChange;
 
@@ -189,7 +188,6 @@ export default class UserInfo extends EventEmitter {
 	}
 
 	divest(amount, newStake) {
-
 		this.stake = newStake;
 		this.divested += amount;
 
