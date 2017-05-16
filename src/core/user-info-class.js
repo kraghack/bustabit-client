@@ -95,6 +95,25 @@ export default class UserInfo extends EventEmitter {
 
 			this.changeBalance(details.userBalanceChange);
 
+			if (this.balance !== details.newUserBalance) {
+				console.warn('user balance was off by ', details.newUserBalance-this.balance, ' syncing');
+				this.changeBalance(details.newUserBalance-this.balance);
+			}
+
+			if (this.invested !== details.newUserInvested) {
+				console.warn('user invested was off by ', details.newUserInvested-this.invested, ' syncing');
+				this.invested = details.newUserInvested;
+			}
+			if (this.offsite !== details.newUserOffsite) {
+				console.warn('user offsite was off by ', details.newUserOffsite-this.offsite, ' syncing');
+				this.offsite = details.newUserOffsite;
+			}
+			if (this.pieces !== details.newUserPieces) {
+				console.warn('user pieces was off by ', details.newUserPieces-this.pieces, ' syncing');
+				this.pieces = details.newUserPieces;
+			}
+
+
 			this.emit('BANKROLL_STATS_CHANGED');
 		};
 
@@ -122,14 +141,6 @@ export default class UserInfo extends EventEmitter {
 		this.wagered = 0.0;
 	}
 
-	balanceSync(newBalance) {
-		// The balance should only ever really be out of sync once at the start (or something else is not getting sync'd)
-		if (newBalance !== this.balance) {
-			console.warn('Balance was out of sync by: ', newBalance - this.balance);
-			this.balance = newBalance;
-			this.emit('BALANCE_CHANGED');
-		}
-	}
 
 	isTrusted() {
   	return this.kind === 'TRUSTED' || this.kind === 'ADMIN';

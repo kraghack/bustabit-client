@@ -23,6 +23,25 @@ export default class Bankroll extends EventEmitter {
 			this.invested += details.bankrollBalanceChange;
 			this.pieces += details.piecesChange;
 			this.offsite += details.offsiteChange;
+
+
+			if (this.balance !== details.newBankrollBalance) {
+				console.warn('bankroll balance was off by ', details.newBankrollBalance-this.balance, ' syncing');
+				this.balance = details.newBankrollBalance;
+			}
+			if (this.invested !== details.newBankrollInvested) {
+				console.warn('bankroll invested was off by ', details.newBankrollInvested-this.invested, ' syncing');
+				this.invested = details.newBankrollBalance;
+			}
+			if (this.offsite !== details.newBankrollOffsite) {
+				console.warn('bankroll offsite was off by ', details.newBankrollOffsite-this.offsite, ' syncing');
+				this.offsite = details.newBankrollOffsite;
+			}
+			if (this.pieces !== details.newBankrollPieces) {
+				console.warn('bankroll pieces was off by ', details.newBankrollPieces-this.pieces, ' syncing');
+				this.pieces = details.newBankrollPieces;
+			}
+
 			this.emit('BANKROLL_CHANGED');
 		};
 
@@ -57,3 +76,4 @@ export default class Bankroll extends EventEmitter {
 		return data;
 	}
 }
+
