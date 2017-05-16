@@ -187,8 +187,10 @@ export default class Engine extends EventEmitter {
 
 				userInfo.changeBalance(-bet.wager);
 
-				if (bet.newBalance !== undefined)
-					userInfo.balanceSync(bet.newBalance);
+				if (userInfo.balance !== bet.newBalance) {
+					console.warn('user balance was off by ', bet.newBalance-userInfo.balance, ' syncing');
+					userInfo.changeBalance(bet.newBalance-userInfo.balance);
+				}
 
 				this.emit('BET_STATUS_CHANGED');
 			}

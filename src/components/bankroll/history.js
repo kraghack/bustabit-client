@@ -32,7 +32,6 @@ class BankrollHistory extends PureComponent {
 		socket.send('getBankrollHistory')
 			.then(history => {
 				if (this.unmounted) return;
-				console.log('Bankroll History: ',history);
 				this.setState({ history, loading: false })
 			})
 			.catch(error => {
@@ -44,8 +43,6 @@ class BankrollHistory extends PureComponent {
 
 	results() {
 		return this.state.history.map(d => {
-			console.log({d});
-
 			// these values are from the users perspective, so let's map it to the bankrolls
 
 			return <tr key={ d.id }>
