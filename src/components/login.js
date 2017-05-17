@@ -166,10 +166,10 @@ class LoginForm extends PureComponent {
 						<FormGroup className={unameError ? 'has-error' : ''}>
 							<InputGroup>
 								<InputGroup.Addon>
-									Uname:
+									Username:
 								</InputGroup.Addon>
 								<input type="text"
-											 placeholder="uname"
+											 placeholder="Username"
 											 className="form-control"
 											 value={this.state.uname}
 											 ref={(input) => { this.firstInput = input; }}
