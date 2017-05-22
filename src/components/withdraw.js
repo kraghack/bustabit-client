@@ -8,7 +8,6 @@ import socket from '../socket'
 import { formatBalance } from '../util/belt'
 import confirm from '../util/confirmation'
 import notification from '../core/notification'
-import {  newInputFee, newOutputFee } from '../util/config'
 import browserSize from '../core/browser-size'
 
 
@@ -16,6 +15,7 @@ class Withdraw extends Component {
 	constructor(props) {
 		super(props);
 		this.firstInput = null; // this is a ref
+		this._unmounted = false;
 		this.state = {
 			amount: null, // when it's null, render max withdrawal
 			address: '',
@@ -24,11 +24,34 @@ class Withdraw extends Component {
 			amountError: null,
 			addressError: null,
 			submitting: false,
-			touched: false
+			touched: false,
+			/// these fees get updated after calling getFeeSchedule
+			gotFeeSchedule: false,
+			withdrawalFee: 0.0,
+			depositFee: 0.0,
+			instantWithdrawalFee: 0.0,
 		};
 	}
 	componentDidMount(){
-		this.firstInput.focus();
+		
+		socket.send('getFeeSchedule').then(schedule => {
+			if (this._unmounted) return;
+
+			this.setState({
+				gotFeeSchedule: true,
+				...schedule
+			}, () => {
+				// after the component is properly loaded..
+				this.firstInput.focus();
+			});
+
+		});
+
+
+	}
+
+	componentWillUnmount() {
+		this._unmounted = true;
 	}
 
 	isInvalidAmount(amount) {
@@ -87,7 +110,6 @@ class Withdraw extends Component {
 		let { address, instantWithdrawal } = this.state;
 		let amount = this.getAmount();
 
-		console.log('instant withdrawal is: ', instantWithdrawal);
 
 		if (!this.validate()) return;
 
@@ -148,8 +170,8 @@ class Withdraw extends Component {
   }
 
   getTotalFee() {
-		return newOutputFee + (this.state.instantWithdrawal ?  newOutputFee + newInputFee  : 0) +
-				userInfo.unpaidDeposits * newInputFee;
+		return this.state.withdrawalFee + (this.state.instantWithdrawal ? this.state.instantWithdrawalFee : 0) +
+				userInfo.unpaidDeposits * this.state.depositFee;
 	}
 
   // returns a number for the input box
@@ -169,7 +191,9 @@ class Withdraw extends Component {
 
 
 	render() {
-		const {amountError, addressError, address, instantWithdrawal}  = this.state;
+		if (!this.state.gotFeeSchedule) return <span>Loading fee schedule...</span>;
+
+		const {amountError, addressError, address, instantWithdrawal }  = this.state;
 
 		const total = this.getTotal();
 
@@ -234,7 +258,7 @@ class Withdraw extends Component {
 											 onChange={() => this.changeInstantWithdrawalSelected()}
 
 								/>
-								Instant Withdrawal ( + {formatBalance(newInputFee + newOutputFee)} bits )
+								Instant Withdrawal ( + {formatBalance(this.state.instantWithdrawalFee)} bits )
 							</label>
 						</div>
 					</Col>
@@ -243,11 +267,11 @@ class Withdraw extends Component {
 						<Col xs={12}>Amount to Withdraw: </Col>
 						<Col xs={12}>{ formatBalance(Number.parseFloat(this.getAmount() || 0) * 100) } bits</Col>
 						<Col xs={12}>Withdrawal Fee:</Col>
-						<Col xs={12}>{formatBalance(newOutputFee)} bits</Col>
+						<Col xs={12}>{formatBalance(this.state.withdrawalFee)} bits</Col>
 						<Col xs={12}>Unpaid Deposit Fee: <small><Link to="/faq/deposit-fee">What is this?</Link></small></Col>
-						<Col xs={12}>{formatBalance(userInfo.unpaidDeposits * newInputFee)} bits ({ userInfo.unpaidDeposits } x {formatBalance(newInputFee)} bits)</Col>
+						<Col xs={12}>{formatBalance(userInfo.unpaidDeposits * this.state.depositFee)} bits ({ userInfo.unpaidDeposits } x {formatBalance(this.state.depositFee)} bits)</Col>
 						<Col xs={12}>Instant Withdrawal Fee:</Col>
-						<Col xs={12} className="bold">{ instantWithdrawal ? formatBalance(newInputFee + newOutputFee) : 0 } bits</Col>
+						<Col xs={12} className="bold">{ instantWithdrawal ? formatBalance(this.state.instantWithdrawalFee) : 0 } bits</Col>
 						<Col xs={12}>Total:</Col>
 						<Col xs={12} className={ total > userInfo.balance ? "bold red-color" : "bold"}>{formatBalance(total)} bits</Col>
 					</Col>
@@ -255,7 +279,7 @@ class Withdraw extends Component {
 
 
 					<Col xs={16} xsOffset={4} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-						<button className='btn btn-success btn-lg' type="submit" disabled={ this.state.submitting }>
+						<button className='btn btn-success btn-lg' type="submit" disabled={  this.state.submitting }>
 							{ this.state.submitting ? <i className="fa fa-spinner fa-pulse fa-fw"></i> : 'Submit'}
 						</button>
 					</Col>
