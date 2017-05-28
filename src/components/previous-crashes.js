@@ -3,15 +3,17 @@ import engine from '../core/engine'
 import { Table } from 'react-bootstrap'
 import { Link } from 'react-router'
 import refresher from '../refresher'
-
+import { bustToColor } from '../util/belt'
 
 class PreviousCrashes extends PureComponent {
 
 
   getLastCrashes() {
 		const h = engine.history;
-		return h.slice(-5).map(
-      (item) => <td key={item.gameId} style={{width: '20%'}}><Link to={'/game/' + item.gameId}>{item.bust}x</Link></td>
+		return h.slice(0, 5).map(
+      (item) => <td key={item.gameId} style={{width: '20%' }}  >
+				<Link to={'/game/' + item.gameId} style={ {color: bustToColor(item.bust)} }>{item.bust}x</Link>
+			</td>
     ).reverse();
   }
 

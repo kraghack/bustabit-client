@@ -137,3 +137,8 @@ export function simpleDate (date) {
 	const mm = date.getMinutes().toString();
 	return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2);
 }
+
+export function bustToColor(bust) {
+	// TODO: some median shit?
+	return (bust < 2.00) ? '#FF5959' : '#66ff66';
+}

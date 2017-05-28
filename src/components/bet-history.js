@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router'
 import engine from '../core/engine'
 import  refresher from '../refresher'
-import { formatBalance } from '../util/belt'
+import { formatBalance, bustToColor } from '../util/belt'
 import CopyableHash from './copyable-hash'
 
 class BetHistory extends Component {
@@ -12,7 +12,7 @@ class BetHistory extends Component {
           <tbody>
 					{
 						engine.history.map(item => <tr key={item.gameId}>
-              <td><Link to={"/game/" +item.gameId}>{item.bust}x</Link></td>
+              <td><Link to={"/game/" +item.gameId} style={ {color: bustToColor(item.bust)} }>{item.bust}x</Link></td>
 								<td>{ item.cashedAt }</td>
 								<td>{ formatBalance(item.wager) }</td>
 								<td>{ formatBalance(item.wager * (item.cashedAt - 1)) }</td>
