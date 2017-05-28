@@ -7,10 +7,10 @@ import notification from '../../core/notification'
 export default class Contents extends Component {
 
 	getHotWalletBalance() {
-		socket.send('getHotWalletBalance')
-			.then(x => notification.setMessage("Hot Wallet Balance: " + formatBalance(x) + ' bits'))
+		socket.send('getHotWalletStatus')
+			.then(x => notification.setMessage("Hot Wallet Status: " + formatBalance(x.balance) + ' bits, and ' + x.inputCount + ' inputs'))
 			.catch(x => {
-				console.error('getHotWalletBalance error:', x);
+				console.error('getHotWalletStatus error:', x);
 				notification.setMessage("error with hot wallet: " + x, 'error');
 			})
 	}

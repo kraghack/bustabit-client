@@ -33,7 +33,7 @@ class Withdraw extends Component {
 		};
 	}
 	componentDidMount(){
-		
+
 		socket.send('getFeeSchedule').then(schedule => {
 			if (this._unmounted) return;
 
