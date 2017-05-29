@@ -29,13 +29,10 @@ export default class CBuffer {
 		// push item to the end
 		push(item) {
 			this.data[(this.end + 1) % this.size] = item;
-
 			// recalculate length
-			if (this.length < this.size) {
-				this.length++;
-			}
+			this.length = Math.min(this.length + 1, this.size);
 			// recalculate end
-			this.end = (this.end) % this.size;
+			this.end = (this.end + 1) % this.size;
 			// recalculate start
 			this.start = (this.size + this.end - this.length + 1) % this.size;
 			// return number current number of items in CBuffer
@@ -48,10 +45,8 @@ export default class CBuffer {
 				this.data[(this.end + i + 1) % this.size] = items[i];
 			}
 			// recalculate length
-			if (this.length < this.size) {
-				if (this.length + i > this.size) this.length = this.size;
-				else this.length += i;
-			}
+			this.length = Math.min(this.length + i, this.size);
+
 			// recalculate end
 			this.end = (this.end + i) % this.size;
 			// recalculate start
