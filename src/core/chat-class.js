@@ -142,9 +142,7 @@ export default class Chat extends EventEmitter {
 
 	focusedHistory() {
 		const focused = (this.focusKind === 'CHANNEL' ?  this.channels : this.friends).get(this.focused);
-		let r = focused ? focused.history.toArray() : [];
-		console.log('focused history: ', r);
-		return r;
+		return focused ? focused.history.toArray() : [];
 	}
 
 	joinedChannels(channels) {

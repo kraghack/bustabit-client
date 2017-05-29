@@ -477,7 +477,7 @@ Graph.prototype.drawGameData = function() {
 
 
 
-// Note, this FLOORS
+// Note, this rounds
 function formatDecimals (n, decimals) {
   if (typeof decimals === 'undefined') {
     if (n % 100 === 0)
@@ -487,7 +487,7 @@ function formatDecimals (n, decimals) {
   }
 
   let floorFactor = Math.pow(10, decimals);
-  n = Math.floor(n * floorFactor) / floorFactor;
+  n = Math.round(n * floorFactor) / floorFactor;
 
 
   return n.toFixed(decimals).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
