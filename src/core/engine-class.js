@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 import { growthFunc } from '../util/math'
 import {  objectEntries } from '../util/belt'
+import CBuffer from '../util/cbuffer'
 
 
 // POSSIBLE EVENTS:
@@ -95,8 +96,8 @@ export default class Engine extends EventEmitter {
 		this.pieces = 0;
 		this.invested = 0; // how much in total has been invested
 
-		// an array of { gameId, bust, hash, wager, cashOut }
-		this.history = [];
+		// a cbuffer of of { gameId, bust, hash, wager, cashOut }
+		this.history = new CBuffer(150);
 
 		/// events: ...
 
@@ -147,7 +148,8 @@ export default class Engine extends EventEmitter {
 			this.forced = info.forced;
 			this.lastHash = info.hash;
 
-			// TODO: adjust bankroll...
+
+			// TODO: adjust/assert bankroll...
 
 			this.history.unshift({
 				gameId: this.gameId,
@@ -156,10 +158,6 @@ export default class Engine extends EventEmitter {
 				cashedAt: this.cashedAt,
 				wager: this.wager,
 			});
-
-			if (this.history.length > 100) {
-				this.history.pop()
-			}
 
 			this.emit('HISTORY_CHANGED');
 			this.emit('GAME_STATE_CHANGED');
@@ -170,8 +168,8 @@ export default class Engine extends EventEmitter {
 
 		socket.on('gameStopped', (info) => {
 			this.gameState = 'GAME_STOPPED';
-			this.emit('GAME_STATE_CHANGED');
 
+			this.emit('GAME_STATE_CHANGED');
 			this.emit('GAME_STOPPED', info);
 		});
 
@@ -321,6 +319,11 @@ export default class Engine extends EventEmitter {
 		if (!(info.playing instanceof Map)) {
 			info.playing = new Map(objectEntries(info.playing));
 		}
+		if (!(info.history instanceof CBuffer)) {
+			const cbuff = new CBuffer(info.history.length);
+			cbuff.pushArray(info.history);
+			info.history = cbuff;
+		}
 
 		Object.assign(this, info);
 		if (this.elapsed) {
@@ -337,9 +340,13 @@ export default class Engine extends EventEmitter {
 	getState() {
 		let data = {};
 		for (const key in this){
-			if (this.hasOwnProperty(key) && !key.startsWith("_")) {
-				data[key] = this[key];
+			if (!this.hasOwnProperty(key) || key.startsWith("_")) continue;
+
+			data[key] = this[key];
+			if (data[key] instanceof CBuffer){
+				data[key] = data[key].toArray();
 			}
+
 		}
 		return data;
 	}

@@ -11,7 +11,7 @@ class BetHistory extends Component {
     return (
           <tbody>
 					{
-						engine.history.map(item => <tr key={item.gameId}>
+						engine.history.toArray().map(item => <tr key={item.gameId}>
               <td><Link to={"/game/" +item.gameId} style={ {color: bustToColor(item.bust)} }>{item.bust}x</Link></td>
 								<td>{ item.cashedAt }</td>
 								<td>{ formatBalance(item.wager) }</td>

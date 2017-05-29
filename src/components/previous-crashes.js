@@ -11,7 +11,7 @@ class PreviousCrashes extends PureComponent {
   getLastCrashes() {
 		const h = engine.history;
 		return h.slice(0, 5).map(
-      (item) => <td key={item.gameId} style={{width: '20%' }}  >
+      (item) => <td key={item.gameId} style={{width: '20%' }} >
 				<Link to={'/game/' + item.gameId} style={ {color: bustToColor(item.bust)} }>{item.bust}x</Link>
 			</td>
     ).reverse();
