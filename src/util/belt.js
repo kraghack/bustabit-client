@@ -140,5 +140,5 @@ export function simpleDate (date) {
 
 export function bustToColor(bust) {
 	// TODO: some median shit?
-	return (bust < 2.00) ? '#FF5959' : '#66ff66';
+	return (bust < 2.00) ? '#ff6666' : '#66ff66';
 }

@@ -1,11 +1,14 @@
 import EventEmitter from 'eventemitter3';
 import { objectEntries } from '../util/belt'
+import CBuffer from '../util/cbuffer'
 
 // events:
 //  TABS_CHANGED: the channel list has changed, or focusedChannel, or friends changed...
 //  FOCUSED_HISTORY_CHANGED:  the focused channel history history changed
 //  SHOW_ADD_CHANNELS_CHANGED: ...
 //  FRIENDS_CHANGED
+
+const MaxMessagesPerChannel = 1000;
 
 export default class Chat extends EventEmitter {
 
@@ -23,9 +26,9 @@ export default class Chat extends EventEmitter {
 		// TODO: local storage or something.. ?
 		// map of channel name, to { unread: int,  history: { message, uname, created } }
 		this.channels = new Map([
-			['english', { unread: 0, history: [] }],
-			['polish',  { unread: 0, history: [] }],
-			['spanish', { unread: 0, history: []  }]
+			['english', { unread: 0, history: new CBuffer(MaxMessagesPerChannel) }],
+			['polish',  { unread: 0, history: new CBuffer(MaxMessagesPerChannel) }],
+			['spanish', { unread: 0, history: new CBuffer(MaxMessagesPerChannel) }]
 		]);
 
 		// map of friend uname to  { unread: int, history: { message, uname, created } }
@@ -56,9 +59,7 @@ export default class Chat extends EventEmitter {
 			}
 
 			message.created = new Date(message.created);
-
 			this.channels.get(channel).history.push(message);
-			// TODO: truncate after a certain size
 
 			this.emit('FOCUSED_HISTORY_CHANGED'); // TODO: not strictly accurate...
 		});
@@ -89,6 +90,11 @@ export default class Chat extends EventEmitter {
 	}
 
 	initialize(info) {
+
+		console.assert(info.channels instanceof Map);
+		console.assert(info.friends instanceof Map);
+
+
 		Object.assign(this, info);
 
 		// all events should be emitted
@@ -101,13 +107,16 @@ export default class Chat extends EventEmitter {
 	setFriends(statusObj) {
 		const entries = objectEntries(statusObj);
 
-		console.log('chat data: ', statusObj);
-
 		for (const [uname, { online, history}] of entries) {
+
+			const newHistory = new CBuffer(MaxMessagesPerChannel);
+
 			for (const message of history) {
 				message.created = new Date(message.created);
+				newHistory.push(message);
 			}
-			this.friends.set(uname, { unread: 0, online, history });
+
+			this.friends.set(uname, { unread: 0, online, history: newHistory });
 		}
 
 
@@ -133,17 +142,22 @@ export default class Chat extends EventEmitter {
 
 	focusedHistory() {
 		const focused = (this.focusKind === 'CHANNEL' ?  this.channels : this.friends).get(this.focused);
-		return focused ? focused.history : [];
+		let r = focused ? focused.history.toArray() : [];
+		console.log('focused history: ', r);
+		return r;
 	}
 
-	joinedChannels(history) {
+	joinedChannels(channels) {
 
-		const entries = objectEntries(history);
+		const entries = objectEntries(channels);
 		for (const [channel, messages] of entries) {
+
+			const history = new CBuffer(MaxMessagesPerChannel);
 			for (const message of messages) {
 				message.created = new Date(message.created);
+				history.push(message);
 			}
-			this.channels.set(channel, { unread: 0, history: messages });
+			this.channels.set(channel, { unread: 0, history });
 		}
 
 		this.emit('FOCUSED_HISTORY_CHANGED');
@@ -159,7 +173,7 @@ export default class Chat extends EventEmitter {
   		return;
 		}
 
-		this.channels.set(channel, { unread: 0, history: [] });
+		this.channels.set(channel, { unread: 0, history: new CBuffer(MaxMessagesPerChannel) });
 
 		// kind of conflating logic, but w/e
 		this.focused = channel;
@@ -190,9 +204,13 @@ export default class Chat extends EventEmitter {
 	getState() {
 		let data = {};
 		for (const key in this){
-			if (this.hasOwnProperty(key) && !key.startsWith("_")) {
-				data[key] = this[key];
+			if (!this.hasOwnProperty(key) || key.startsWith("_")) continue;
+
+			data[key] = this[key];
+			if (data[key] instanceof CBuffer){
+				data[key] = data[key].toArray();
 			}
+
 		}
 		return data;
 	}
