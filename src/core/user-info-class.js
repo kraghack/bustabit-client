@@ -5,7 +5,7 @@ import EventEmitter from 'eventemitter3';
 // events:
 //  UNAME_CHANGED:    called during login/log out the uname changes
 //  BALANCE_CHANGED:  the balance has changed
-//  BANKROLL_STATS_CHANGED: The bankroll, invested or divested changed
+//  BANKROLL_STATS_CHANGED: The bankroll, invested  changed
 //  HAS_MFA_CHANGED
 //  EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED
 //  EMAIL_CHANGED
@@ -126,7 +126,6 @@ export default class UserInfo extends EventEmitter {
 		this.balance = 0.0;
 		this.bets = 0;
 		this.created = new Date();
-		this.divested = 0;
 		this.email = '';
 		this.emergencyWithdrawalAddress = '';
 		this.hasMFA = false;
@@ -139,6 +138,10 @@ export default class UserInfo extends EventEmitter {
 		this.uname = '';
 		this.unpaidDeposits = 0;
 		this.wagered = 0.0;
+
+		// You actually technically only get the money when the game ends. So in the mean time, it shows up here
+		// if it has the value, it'll be of the form { wager, balance }
+		this.pending = null;
 	}
 
 
@@ -188,22 +191,50 @@ export default class UserInfo extends EventEmitter {
     this.emit('BALANCE_CHANGED');
   }
 
+  betPlaced(bet) {
+		this.changeBalance(-bet.wager);
+		console.assert(this.pending == null);
+
+
+		this.pending = {
+			wager: bet.wager, // When the game ends, their wagered increases by this
+			balance: 0.0,     // their balance is correct
+		};
+
+		if (this.balance !== bet.newBalance) {
+			console.warn('user balance was off by ', bet.newBalance-this.balance, ' syncing');
+			this.changeBalance(bet.newBalance-this.balance);
+		}
+
+	}
+
+	cashedOut(cashOut) {
+  	console.assert(this.pending);
+  	console.assert(this.pending.wager === cashOut.wager);
+  	console.assert(this.pending.balance === 0);
+
+  	this.pending.balance = Math.round(cashOut.wager * cashOut.cashedAt);
+	}
+
+	// This flushes the stuff from pending
+	gameEnded() {
+  	if (this.pending === null) return;
+
+  	this.bets++;
+  	this.wagered += this.pending.wager;
+  	this.balance += this.pending.balance;
+
+  	this.pending = null;
+
+		this.emit('BALANCE_CHANGED');
+	}
+
   invest(balanceChange, stakeChange) {
 		this.stake += stakeChange;
 		this.invested += balanceChange;
 
 		// we have to call this last, because it has a sync emit:
 		this.changeBalance(balanceChange);
-
-		this.emit('BANKROLL_STATS_CHANGED');
-	}
-
-	divest(amount, newStake) {
-		this.stake = newStake;
-		this.divested += amount;
-
-		// we have to call this last, because it has a sync emit:
-		this.changeBalance(amount);
 
 		this.emit('BANKROLL_STATS_CHANGED');
 	}

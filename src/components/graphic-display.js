@@ -475,8 +475,6 @@ Graph.prototype.drawGameData = function() {
   }
 };
 
-
-
 // Note, this rounds
 function formatDecimals (n, decimals) {
   if (typeof decimals === 'undefined') {

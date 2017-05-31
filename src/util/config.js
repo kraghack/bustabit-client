@@ -6,7 +6,6 @@ export const tipFee = 100;
 
 export const tradeFee = 100;
 
-export const minDivest = 1e6;
 export const minInvest = 1e6;
 export const maxInvestLeverage = 25;
 

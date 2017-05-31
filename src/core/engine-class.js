@@ -87,9 +87,6 @@ export default class Engine extends EventEmitter {
 		/** Tell if the game is lagging but only  when the game is in progress **/
 		this.lag = false;
 
-		/** The hash of the last game **/
-		this.lastHash = null;
-
 		/** Animation Events triggers**/
 		this.nyan = false;
 
@@ -146,23 +143,23 @@ export default class Engine extends EventEmitter {
 			this.gameState = 'GAME_ENDED';
 			this.bust = info.bust;
 			this.forced = info.forced;
-			this.lastHash = info.hash;
 
-
-			// TODO: adjust/assert bankroll...
+			// TODO: adjust/assert bankroll...  info.bankrollBalance
 
 			this.history.unshift({
-				gameId: this.gameId,
-				bust: this.bust,
-				hash: info.hash,
+				gameId:   this.gameId,
+				bust:     this.bust,
+				hash:     info.hash,
 				cashedAt: this.cashedAt,
-				wager: this.wager,
+				wager:    this.wager,
 			});
+
+			userInfo.gameEnded();
+
 
 			this.emit('HISTORY_CHANGED');
 			this.emit('GAME_STATE_CHANGED');
 			this.emit('PLAYERS_CHANGED');
-
 			this.emit('GAME_ENDED', info);
 		});
 
@@ -174,6 +171,7 @@ export default class Engine extends EventEmitter {
 		});
 
 
+
 		socket.on('betPlaced', bet => {
 
 			this.playing.set(bet.uname, bet.wager);
@@ -182,14 +180,7 @@ export default class Engine extends EventEmitter {
 				this.placingBet = false;
 				this.wager = bet.wager;
 
-
-				userInfo.changeBalance(-bet.wager);
-
-				if (userInfo.balance !== bet.newBalance) {
-					console.warn('user balance was off by ', bet.newBalance-userInfo.balance, ' syncing');
-					userInfo.changeBalance(bet.newBalance-userInfo.balance);
-				}
-
+				userInfo.betPlaced(bet);
 				this.emit('BET_STATUS_CHANGED');
 			}
 
@@ -206,20 +197,22 @@ export default class Engine extends EventEmitter {
 					const wager = this.playing.get(uname);
 
 					this.playing.delete(uname);
-					this.cashOuts.push({uname, cashedAt, wager});
+
+					const cashOut = { uname, cashedAt, wager };
+					this.cashOuts.push(cashOut);
 
 
 					if (uname === userInfo.uname) {
 						this.cashingOut = false;
 						this.cashedAt = cashedAt;
 
+						userInfo.cashedOut(cashOut);
 
-						userInfo.changeBalance(wager * cashedAt);
 						this.emit('BET_STATUS_CHANGED');
 					}
 
 					// A simpler event for scripts
-					this.emit('CASHED_OUT', {uname, cashedAt, wager});
+					this.emit('CASHED_OUT', cashOut);
 				}
 
 			}
