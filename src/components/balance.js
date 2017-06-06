@@ -15,7 +15,7 @@ class Balance extends PureComponent {
 
     return (
 			<span key={userInfo.balance} style={{ display: 'block'}}>
-				Bits: { formatBalance(userInfo.balance) }
+				Bits: { formatBalance(userInfo.displayBalance()) }
 			</span>
     )
   }

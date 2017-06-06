@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 
 // events:
 //  UNAME_CHANGED:    called during login/log out the uname changes
-//  BALANCE_CHANGED:  the balance has changed
+//  BALANCE_CHANGED:  the balance has changed (or their display balance..)
 //  BANKROLL_STATS_CHANGED: The bankroll, invested  changed
 //  HAS_MFA_CHANGED
 //  EMERGENCY_WITHDRAWAL_ADDRESS_CHANGED
@@ -144,6 +144,11 @@ export default class UserInfo extends EventEmitter {
 		this.pending = null;
 	}
 
+	displayBalance() {
+  	// Shows their real balance, plus anything pending...
+		return this.balance + (this.pending ? this.pending.balance : 0);
+	}
+
 
 	isTrusted() {
   	return this.kind === 'TRUSTED' || this.kind === 'ADMIN';
@@ -214,6 +219,7 @@ export default class UserInfo extends EventEmitter {
   	console.assert(this.pending.balance === 0);
 
   	this.pending.balance = Math.round(cashOut.wager * cashOut.cashedAt);
+		this.emit('BALANCE_CHANGED');
 	}
 
 	// This flushes the stuff from pending
