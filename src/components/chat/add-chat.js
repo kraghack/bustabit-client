@@ -50,9 +50,24 @@ class AddChat extends Component {
     	const prefix = 'NOT_WAGERED_ENOUGH:';
 
     	if (typeof err === 'string' && err.startsWith(prefix)) {
-				// TODO:  subtract how much you're currently wagering, to further improve the error
-				const amount = err.slice(prefix.length);
-				notification.setMessage(<span><span className="red-tag">Error </span> In order to prevent spam, we require that you wager at least { formatBalance(amount) } bits more in order to chat</span>, 'error');
+				let amount = Number.parseInt(err.slice(prefix.length), 10);
+
+				if (userInfo.pending)
+					amount -= userInfo.pending.wager;
+
+				if (amount < 0) {
+					notification.setMessage(<span>
+						<span className="red-tag">Error </span>
+							Please wait until the current game ends, to be able to chat
+						</span>
+						, 'error');
+				} else {
+					notification.setMessage(<span>
+						<span className="red-tag">Error </span>
+						In order to prevent spam, we require that you wager at least { formatBalance(amount) } bits more in order to chat</span>, 'error');
+				}
+
+
 			} else {
 				console.error(err);
 				notification.setMessage(<span><span className="red-tag">Error </span> Unexpected server error: {err}.</span>, 'error');
