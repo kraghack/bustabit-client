@@ -4,6 +4,9 @@
   "homepage": "https://www.bustabit.com",
   "description": "Client for bustabit",
   "private": true,
+  "engines": {
+     "node": "8.x"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.2.2",
