@@ -158,15 +158,28 @@ export default class UserInfo extends EventEmitter {
     return !!this.uname;
   }
 
-  initialize(info) {
+  initialize(info, engineInfo) {
 		console.assert(typeof info === 'object');
 		console.assert(typeof info.uname === 'string');
 
 		if (typeof info.created === 'string')
 			info.created = new Date(info.created);
 
-
 		Object.assign(this, info);
+
+		// We're going through the engineInfo, so that we can assign the pending shit
+
+		for (const cashOut of engineInfo.cashOuts) {
+			if (cashOut.uname === this.uname) {
+				this.pending = { wager: cashOut.wager, balance: cashOut.wager * cashOut.cashedAt };
+				break;
+			}
+		}
+
+		const wager = engineInfo.playing[this.uname];
+		if (typeof wager === 'number') {
+			this.pending = { wager, balance: 0 }
+		}
 
 		// all events should be emitted
 	  this.emit('UNAME_CHANGED');

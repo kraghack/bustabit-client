@@ -309,16 +309,13 @@ export default class Engine extends EventEmitter {
 
 
 	initialize(info) {
-		if (!(info.playing instanceof Map)) {
-			info.playing = new Map(objectEntries(info.playing));
-		}
-		if (!(info.history instanceof CBuffer)) {
-			const cbuff = new CBuffer(info.history.length);
-			cbuff.pushArray(info.history);
-			info.history = cbuff;
-		}
 
-		Object.assign(this, info);
+		const playing = new Map(objectEntries(info.playing));
+
+		const history = new CBuffer(info.history.length);
+		history.pushArray(info.history);
+
+		Object.assign(this, info, { playing, history });
 		if (this.elapsed) {
 			this.startTime = Date.now() - this.elapsed;
 			delete this.elapsed;
