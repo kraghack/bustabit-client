@@ -97,7 +97,7 @@ const history = browserHistory;
 
 
 function NoMatch() {
-  return <img src={ require('../img/dice.png') } alt="dice"/>;
+  return <img src={ require('./img/dice.png') } alt="dice"/>;
 }
 
 

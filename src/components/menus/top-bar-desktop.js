@@ -76,7 +76,7 @@ class TopBarDesktop extends PureComponent {
 		const navbarInstance = (
 			<Navbar fluid>
 				<Navbar.Header>
-					<img src={ require('../../../img/logo.png') } alt="Bustabit Logo" style={styles.logo}/>
+					<img src={ require('../../img/logo.png') } alt="Bustabit Logo" style={styles.logo}/>
 					<Navbar.Brand>
 						<Link to="/" style={styles.navbarBrand}>Bustabit</Link>
 					</Navbar.Brand>

@@ -23,7 +23,7 @@ class GameOdds extends Component {
           <p>
             The other important thing to keep in mind is that every game has a 1 % chance of instantly busting. We do not make <span className="hl-word"> any</span> money on it, but rather use this to fund the bonus scheme. This is an important consideration to make if you are playing in such a way that you never win the bonus.
           </p>
-          <img src={ require('../../../img/house-edge.png') } alt="Bustabit House Edge" className="img-responsive"/>
+          <img src={ require('../../img/house-edge.png') } alt="Bustabit House Edge" className="img-responsive"/>
         </Col>
         <FaqFooter />
       </div>
