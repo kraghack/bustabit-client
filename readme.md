@@ -1,13 +1,13 @@
 bustabit-client
 -----------------
 
-bustabit-client is a Single Page App (SPA) that uses react in order to be a full client for bustabit. It's built with react, is responsive 
+bustabit-client is a Single Page App (SPA) that uses react in order to be a full client for bustabit. 
 
 
 Installation
 ============
 
-Make sure you have a fairly recent version of node.js and npm installed, and use:
+Make sure you have a fairly recent version of node.js and npm installed (and ideally the latest), and use:
 
 `npm install`
 
