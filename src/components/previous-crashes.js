@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import engine from '../core/engine'
 import { Table } from 'react-bootstrap'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import refresher from '../refresher'
 import { bustToColor } from '../util/belt'
 

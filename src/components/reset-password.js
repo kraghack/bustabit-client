@@ -1,8 +1,9 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { randomPassword, validatePassword } from '../util/belt'
 import socket from '../socket'
-import { browserHistory } from 'react-router'
 import notification from '../core/notification'
 
 
@@ -39,7 +40,7 @@ class ResetPassword extends Component {
 			return socket
 				.send('resetPassword', {newPassword: password, forgotPasswordToken})
 				.then(info => {
-					browserHistory.push('/');
+					this.props.history.push('/');
 					notification.setMessage(<span><span className="green-tag">Success!</span> Your password has been successfully changed.</span>);
 				}, err => {
 						console.error('Unexpected server error: ' + err);

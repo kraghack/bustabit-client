@@ -12,7 +12,7 @@ export function formatBalance(n,decimals) {
 
 
 export function validateUname(uname) {
-  const allowedCharacters = /^[0-9a-zA-Z_\-]+$/;
+  const allowedCharacters = /^[0-9a-zA-Z_-]+$/;
 
 	if (!uname)
 		return 'Please enter a username.';
@@ -26,7 +26,7 @@ export function validateUname(uname) {
 }
 
 export function isAValidEmailAddress(emailAddress){
-  return /^[a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,}$/i.test(emailAddress);
+  return /^[a-z0-9_\-.]{2,}@[a-z0-9_\-.]{2,}\.[a-z]{2,}$/i.test(emailAddress);
 }
 
 export function randomPassword(length) {

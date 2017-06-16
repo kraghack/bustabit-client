@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react'
 import { Row, Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { validateEmail, validatePassword } from '../../util/belt'
 import socket from '../../socket'
-import { browserHistory } from 'react-router'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
@@ -70,9 +69,10 @@ class UpdateEmail extends PureComponent {
       .then(info => {
         console.log(info);
 				this.setState({ submitting: false});
-        browserHistory.push('/');
         notification.setMessage(<span><span className="green-tag">Success!</span> Your email has been updated.</span>);
-      }, err => {
+				this.props.history.push('/');
+
+			}, err => {
 				this.setState({ submitting: false});
         if (err === 'INVALID_PASSWORD') {
           this.setState({

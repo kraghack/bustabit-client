@@ -6,6 +6,7 @@ import React, { PureComponent } from 'react'
 
 export default function refresher(WrappedComponent, ...subscribeList) {
 
+	// Note it's returning PureComponent!
 	return class Refresher extends PureComponent {
 
 		constructor(props) {

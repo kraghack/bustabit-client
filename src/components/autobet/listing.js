@@ -1,6 +1,8 @@
-import React, { PropTypes, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
 import { Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'
 import martingaleStrategy from './strategies/martingale'
 import followStrategy from './strategies/follow'
 

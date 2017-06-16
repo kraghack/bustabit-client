@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { validateEmail } from '../util/belt'
 import socket from '../socket'
-import { browserHistory } from 'react-router'
 import notification from '../core/notification'
 import Recaptcha from './recaptcha'
 
@@ -48,7 +47,7 @@ class ForgotPassword extends Component {
 			return socket
 				.send('forgotPassword', {email, recaptchaResponse})
 				.then(() => {
-					browserHistory.push('/');
+					this.props.history.push('/');
 					notification.setMessage('You\'ll receive an email with the instructions to reset your password.');
 				}, err => {
 						console.error(err);

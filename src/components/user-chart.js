@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react'
-import ReactHighcharts from 'react-highcharts'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ReactHighcharts from 'react-highcharts';
 import socket from '../socket';
-import { formatBalance } from '../util/belt'
+import { formatBalance } from '../util/belt';
 
 const redColor = '#ff5a5f';
 const greenColor = '#2ecc71';

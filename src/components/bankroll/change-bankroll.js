@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import { Col, Form, FormGroup, InputGroup } from 'react-bootstrap'
-import {  browserHistory } from 'react-router'
 import socket from '../../socket'
 import refresher from '../../refresher'
 import notification from '../../core/notification'
@@ -171,7 +170,7 @@ class ChangeBankroll extends PureComponent {
 								this.setState({ blocking: false, submitting: false });
 
 
-								browserHistory.push('/');
+								this.props.history.push('/');
 							},
 							err => {
 								if (this.unmounted) return;

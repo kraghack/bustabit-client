@@ -1,4 +1,6 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
 import {  Col, Row } from 'react-bootstrap'
 import userInfo from '../../core/user-info'
 import refresher from '../../refresher';

@@ -1,9 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+
 import { Form, Col, Row, FormGroup, InputGroup } from 'react-bootstrap'
 import socket from '../../socket'
 import notification from '../../core/notification'
 import { validateUname } from '../../util/belt'
-import {  browserHistory } from 'react-router'
 import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 import NotLoggedIn from '../not-logged-in-well'
@@ -83,7 +85,7 @@ class Mute extends Component {
 				.then(info => {
 					notification.setMessage(<span>The user <span className="red-color">{uname}</span> has been muted.</span>);
 					this.setState({ submitting: false });
-					browserHistory.push('/');
+					this.props.history.push('/');
 				}, err => {
 					this.setState({ submitting: false });
 					if (err === 'UNAME_NOT_FOUND') {

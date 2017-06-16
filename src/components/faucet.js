@@ -3,7 +3,6 @@ import { Col, Row } from 'react-bootstrap'
 
 import socket from '../socket'
 import notification from '../core/notification'
-import { browserHistory } from 'react-router'
 import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
@@ -32,13 +31,13 @@ class Faucet extends PureComponent {
 						this.setState({
 							status: 'CLAIMED'
 						});
-						browserHistory.push('/');
+						this.history.push('/');
 						notification.setMessage(<span><span className="green-tag">Success!</span> Faucet claimed.</span>);
 					},
 					err => {
 						console.error('Got error claiming faucet: ', err);
 						this.setState({status: 'ERROR', error: err.message || 'unknown error'})
-						browserHistory.push('/');
+						this.history.push('/');
 						notification.setMessage(<span><span
 							className="red-tag">Error </span> Error claiming faucet: {err}.</span>, 'error');
 					}

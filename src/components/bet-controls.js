@@ -4,7 +4,7 @@ import Autobet from './autobet/autobet'
 import { NavItem } from 'react-bootstrap'
 import userInfo from '../core/user-info'
 import refresher from '../refresher';
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import browserSize from '../core/browser-size'
 
 class BetControls extends PureComponent {

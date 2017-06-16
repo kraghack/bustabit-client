@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import QRCode from 'qrcode.react'
 import { Col, FormGroup, InputGroup } from 'react-bootstrap'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'

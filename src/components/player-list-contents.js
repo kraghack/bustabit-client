@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { formatBalance } from '../util/belt'
 import engine from '../core/engine'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 class PlayerListContents extends Component {
 

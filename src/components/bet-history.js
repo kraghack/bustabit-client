@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import engine from '../core/engine'
 import  refresher from '../refresher'
 import { formatBalance, bustToColor } from '../util/belt'

@@ -2,14 +2,17 @@ import React, { PureComponent } from 'react'
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { validateUname, validatePasscode, validatePassword } from '../util/belt'
 import socket from '../socket'
-import { browserHistory, Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import userInfo from '../core/user-info';
 import notification from '../core/notification'
+import engine from '../core/engine'
 
 
-class LoginForm extends PureComponent {
+class Login extends PureComponent {
   constructor(props) {
+
     super(props);
+
 		this.firstInput = null; // this is a ref
     this.state = {
       uname: '',
@@ -93,9 +96,9 @@ class LoginForm extends PureComponent {
       return socket
         .send('login', {uname, password, passcode})
         .then(info => {
-          userInfo.initialize(info.userInfo);
+          userInfo.initialize(info.userInfo, engine);
 					this.setState({ submitting: false });
-          browserHistory.push('/');
+          this.props.history.push('/');
           localStorage.setItem('secret', info.sessionId);
 					notification.setMessage(<span><span className="green-tag">Welcome Back {uname}! </span> You are now logged in.</span>);
         }, err => {
@@ -201,7 +204,8 @@ class LoginForm extends PureComponent {
 	}
 
   render() {
-    return (
+
+		return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <Col xs={12}>
         <h4 className="text-center">Welcome Back!</h4>
@@ -226,4 +230,4 @@ class LoginForm extends PureComponent {
 
 
 
-export default LoginForm;
+export default Login;

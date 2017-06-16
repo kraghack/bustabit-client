@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Row, Col, Form, FormGroup, InputGroup } from 'react-bootstrap'
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router-dom'
 import userInfo from '../core/user-info'
 import refresher from '../refresher';
 import NotLoggedIn from './not-logged-in-well'
@@ -128,16 +128,16 @@ class Withdraw extends Component {
 
 							if (instantWithdrawal) {
 								socket.send('sendWithdrawals').then(() => {
-									browserHistory.push('/transactions/withdrawals');
+									this.props.history.push('/transactions/withdrawals');
 								}, () => {
 									notification.setMessage('Your withdrawal was queued, but there seems to have been a problem with the' +
 										'instant withdrawal. You were no charged for this, and we will process your withdrawal ASAP', 'error');
-									browserHistory.push('/transactions/withdrawals');
+									this.props.history.push('/transactions/withdrawals');
 								});
 								return;
 							}
 
-							browserHistory.push('/transactions/withdrawals');
+							this.props.history.push('/transactions/withdrawals');
 							notification.setMessage('Your withdrawal has been queued');
 						},
 						error => {

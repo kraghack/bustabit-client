@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {  Col, Row } from 'react-bootstrap'
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'
 import userInfo from '../../core/user-info'
 import refresher from '../../refresher';
 

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import '../sass/app.css';
 import '../../node_modules/font-awesome/css/font-awesome.css'
@@ -11,6 +12,7 @@ import GraphicDisplay from '../components/graphic-display'
 import Notification from '../components/notification'
 import browserSize from '../core/browser-size'
 import refresher from '../refresher'
+
 
 class App extends Component {
 
@@ -97,6 +99,8 @@ class App extends Component {
           </div>
         </div>
         {this.props.children}
+
+
       </div>
     )
   }
@@ -105,7 +109,7 @@ class App extends Component {
 
 App.propTypes = {
 	children: PropTypes.node,
-}
+};
 
 export default refresher(App,
   [browserSize, 'HEIGHT_CHANGED', 'WIDTH_CHANGED']

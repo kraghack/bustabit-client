@@ -4,7 +4,6 @@ import socket from '../../socket'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
-import { browserHistory } from 'react-router'
 import { validatePasscode } from '../../util/belt'
 
 
@@ -48,7 +47,7 @@ class RemoveTwoFactorAuthentication extends PureComponent {
       .then(info => {
         console.log(info);
 				this.setState({ submitting: false });
-				browserHistory.push('/');
+				this.props.history.push('/');
         notification.setMessage('Two Factor Authentication has been disabled for your account.');
       }, err => {
 				this.setState({ submitting: false });

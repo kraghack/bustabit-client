@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Col, Table, Row } from 'react-bootstrap'
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'
 import { formatBalance } from '../../util/belt'
 import {  blockExplorerUrlPrefix } from '../../util/config'
 import socket from '../../socket'
@@ -69,7 +69,7 @@ export default class DepositHistory extends PureComponent {
 			<td>{ d.address }</td>
 			<td>{ formatBalance(d.amount) } bits</td>
 			<td>
-				<a href={ blockExplorerUrlPrefix + d.txid + '/#output-index-' + d.vout} target="_blank" rel="noopener">
+				<a href={ blockExplorerUrlPrefix + d.txid + '/#output-index-' + d.vout} target="_blank" rel="noopener noreferrer">
 				{ this.getStatus(d) }
 				</a>
 			</td>

@@ -1,6 +1,8 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
 import { Popover, OverlayTrigger } from 'react-bootstrap';
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router-dom'
 import confirm from '../../util/confirmation'
 import notification from '../../core/notification'
 import socket from '../../socket'
@@ -16,8 +18,8 @@ class PopoverMenu extends PureComponent {
 				// `proceed` callback
 				socket.send('addFriend', uname)
 					.then(() => {
-							browserHistory.push('/');
 							notification.setMessage(<span><span className="green-tag">Success!</span> {uname} has been added to your friend list.</span>);
+							this.props.history.push('/');
 						},
 						err => {
 							console.error('Unexpected server error: ' + err);
@@ -42,7 +44,7 @@ class PopoverMenu extends PureComponent {
 				// `proceed` callback
 				socket.send('removeFriend', uname)
 					.then(() => {
-							browserHistory.push('/');
+							this.props.history.push('/');
 							notification.setMessage(uname + ' has been removed from your friend list.');
 						},
 						err => {

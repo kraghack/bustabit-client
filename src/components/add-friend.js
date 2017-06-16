@@ -48,7 +48,7 @@ class AddFriend extends Component {
 				.then(info => {
 					notification.setMessage(<span><span className="green-tag">Success!</span> You added {uname} to your friend list.</span>);
 					this.setState({ submitting: false });
-					browserHistory.push('/');
+					this.props.history.push('/');
 				}, err => {
 					this.setState({ submitting: false });
 					if (err === 'UNAME_NOT_FOUND') {

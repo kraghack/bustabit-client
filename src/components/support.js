@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router-dom'
 import { validateEmail } from '../util/belt'
 import socket from '../socket'
 import notification from '../core/notification'
@@ -80,7 +80,7 @@ class Support extends PureComponent {
 			socket.send('sendSupport', {email: this.getEmail(), message, recaptchaResponse })
 				.then(() => {
 						this.setState({ submitting: false});
-						browserHistory.push('/');
+						this.props.history.push('/');
 						notification.setMessage(<span><span className="green-tag">Success!</span> Your message has been sent.</span>);
 					},
 					error => {

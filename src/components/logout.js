@@ -1,11 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import socket from '../socket'
-import { browserHistory } from 'react-router'
 import { Form } from 'react-bootstrap'
 import notification from '../core/notification'
 
 
-class Logout extends PureComponent {
+class Logout extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -20,7 +19,7 @@ class Logout extends PureComponent {
       .send('logout')
       .then( () => {
 					this.setState({ submitting: false });
-          browserHistory.push('/');
+          this.history.push('/');
 					notification.setMessage(<span><span className="green-tag">Success!</span> You have been logged out.</span>);
 				}
       )

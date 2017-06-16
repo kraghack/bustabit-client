@@ -5,7 +5,7 @@ import { objectEntries } from '../../util/belt'
 import chat from '../../core/chat'
 import userInfo from '../../core/user-info'
 import refresher from '../../refresher'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 
 class ChatChannels extends Component {

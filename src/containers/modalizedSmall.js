@@ -1,5 +1,5 @@
-import React, { PureComponent, PropTypes } from 'react'
-import { browserHistory } from 'react-router';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
 
 import { Modal } from 'react-bootstrap'
@@ -25,7 +25,7 @@ class ModalizeSmall extends PureComponent {
 		return (
 			<Modal show={true} bsSize="small"
 						 aria-labelledby="contained-modal-title-lg"
-						 onHide={() => browserHistory.push('/')}>
+						 onHide={() => this.props.history.push('/')}>
 				<Modal.Header closeButton>
 					<Modal.Title id="contained-modal-title-sm">{ title }</Modal.Title>
 				</Modal.Header>

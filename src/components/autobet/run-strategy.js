@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import socket from '../../socket'
 import chat from '../../core/chat'
@@ -174,6 +175,7 @@ class RunStrategy extends Component {
 				running && <div>
 					<button onClick={ () => this.stop() } className="btn btn-danger">Stop!</button>
 					<iframe style={{ width: 0, height: 0, border: 0, visibility: 'none' }}
+									title="hidden script running iframe"
 									ref={ (ref) => this.iframeRef = ref }
 									src="/iframe.html" sandbox="allow-scripts"
 					></iframe>

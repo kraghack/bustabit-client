@@ -5,14 +5,17 @@
   "description": "Client for bustabit",
   "private": true,
   "engines": {
-     "node": "8.x"
+    "node": "8.x"
   },
-  "devDependencies": {
+  "dependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.2.2",
     "bootstrap-sass": "^3.3.7",
+    "eventemitter3": "^2.0.2",
     "font-awesome": "^4.6.3",
+    "history": "^4.6.1",
     "node-sass": "^4.5.0",
+    "prop-types": "^15.5.10",
     "qrcode.react": "^0.7.1",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
@@ -23,8 +26,10 @@
     "react-highcharts": "^12.0.0",
     "react-notification": "^6.6.0",
     "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
     "react-scripts": "^1.0.7",
     "rollup": "^0.42.0",
+    "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "speakeasy": "^2.0.0",
     "timeago-react": "^1.0.7",
@@ -39,9 +44,5 @@
     "sass-dev": "node-sass --watch --precision 8 src/sass/app.scss src/sass/app.css",
     "eject": "react-scripts eject",
     "build-iframe": "cd iframe && node rollup.js"
-  },
-  "dependencies": {
-    "eventemitter3": "^2.0.2",
-    "rollup-plugin-commonjs": "^8.0.2"
   }
 }

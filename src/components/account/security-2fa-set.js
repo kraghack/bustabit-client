@@ -4,7 +4,6 @@ import socket from '../../socket'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
-import { browserHistory } from 'react-router'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode.react'
 import { validatePasscode } from '../../util/belt'
@@ -53,9 +52,9 @@ class SetTwoFactorAuthentication extends PureComponent {
       .then(info => {
         console.log(info);
 				this.setState({ submitting: false });
-        browserHistory.push('/');
         notification.setMessage(<span><span className="green-tag">Success!</span> Two Factor Authentication has been enabled for your account.</span>);
-      }, err => {
+				this.props.history.push('/');
+			}, err => {
 				this.setState({ submitting: false });
         if (err === 'INVALID_PASSCODE') {
           this.setState({

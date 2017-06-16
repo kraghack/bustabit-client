@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import {  Col } from 'react-bootstrap'
 import FaqFooter from './footer'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import { tradeFee } from '../../util/config'
 import { formatBalance } from '../../util/belt'
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Row, Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 
 import socket from '../../socket'
-import { browserHistory } from 'react-router'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
@@ -54,7 +53,7 @@ class EmergencyAddress extends Component {
       .then(info => {
         console.log(info);
 				this.setState({ submitting: false});
-        browserHistory.push('/');
+        this.props.history.push('/');
         notification.setMessage(<span><span className="green-tag">Success!</span> An emergency bitcoin address has been enabled for your account.</span>);
       }, err => {
 				this.setState({ submitting: false});

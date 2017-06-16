@@ -1,8 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+
+
 import { Form, Col, FormGroup, InputGroup } from 'react-bootstrap'
 import { validateUname, formatBalance } from '../util/belt'
 import { tipFee } from '../util/config'
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router-dom'
 import confirm from '../util/confirmation'
 import notification from '../core/notification'
 import socket from '../socket'
@@ -96,7 +99,7 @@ class Tip extends Component {
             .then(() => {
                 console.log('Tip: ', amount,' sent to ',recipient);
 								this.setState({ submitting: false });
-                browserHistory.push('/');
+                this.props.history.push('/');
                 notification.setMessage(<span><span className="green-tag">Success!</span> The tip for {recipient} has been sent.</span>);
               },
               error => {

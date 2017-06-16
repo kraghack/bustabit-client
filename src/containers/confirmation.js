@@ -1,4 +1,7 @@
-import React, { PropTypes, PureComponent } from 'react'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
+
 import { confirmable } from 'react-confirm';
 
 import { Modal, Col, Row } from 'react-bootstrap'

@@ -1,5 +1,7 @@
-import React, { Component, PropTypes } from 'react'
-import Chat from './chat'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+import Chat from './chat';
 import { Table } from 'react-bootstrap'
 import browserSize from '../../core/browser-size'
 

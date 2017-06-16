@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Form, FormGroup, Col, InputGroup } from 'react-bootstrap'
 import { validateUname, isAValidEmailAddress, randomPassword, validatePassword } from '../util/belt'
 import socket from '../socket'
-import { browserHistory } from 'react-router'
 import userInfo from '../core/user-info';
 import notification from '../core/notification'
 import Recaptcha from './recaptcha'
@@ -125,7 +124,7 @@ class Register extends Component {
 				.send('register', { uname, password, email, recaptchaResponse })
 				.then(info => {
 					this.setState({ submitting: false });
-					browserHistory.push('/');
+					this.history.push('/');
 					userInfo.initialize(info.userInfo);
 					localStorage.setItem('secret', info.sessionId);
 					notification.setMessage(<span><span className="green-tag">Welcome {uname}! </span> You are successfully registered.</span>);

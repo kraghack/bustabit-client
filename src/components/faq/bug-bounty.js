@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import {  Col } from 'react-bootstrap'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import FaqFooter from './footer'
 
 class BugBounty extends PureComponent {

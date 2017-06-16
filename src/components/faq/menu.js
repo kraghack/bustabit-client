@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react'
+/*import React, { PureComponent } from 'react'
 import {  Col, Row } from 'react-bootstrap'
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'
 
 class FaqMenu extends PureComponent {
 
@@ -168,3 +168,5 @@ class FaqMenu extends PureComponent {
 
 
 export default FaqMenu;
+
+  */

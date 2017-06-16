@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Table, Col, Row } from 'react-bootstrap'
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'
 import { formatBalance } from '../../util/belt'
 import {  blockExplorerUrlPrefix } from '../../util/config'
 import socket from '../../socket'
@@ -48,7 +48,7 @@ class WithdrawalHistory extends PureComponent {
 			<td>{ formatBalance(w.amount) } bits</td>
 			<td>{ formatBalance(w.fee) } bits</td>
 			<td>
-				{  w.txid ? <a href={ blockExplorerUrlPrefix + w.txid } target="_blank" rel="noopener">Sent</a> :
+				{  w.txid ? <a href={ blockExplorerUrlPrefix + w.txid } target="_blank" rel="noopener noreferrer">Sent</a> :
           <Link to="/queued-withdrawals">Queued</Link> }
 			</td>
 			<td>

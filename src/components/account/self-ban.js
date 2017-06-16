@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Row, Form, Col } from 'react-bootstrap'
 import socket from '../../socket'
-import { browserHistory } from 'react-router'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
@@ -29,7 +28,7 @@ class SelfBan extends PureComponent {
 				socket.send('selfBan')
 					.then(() => {
 							this.setState({ submitting: false });
-							browserHistory.push('/');
+							this.props.history.push('/');
 							notification.setMessage(<span className="red-color">Your account has been deleted.</span>);
 						},
 						error => {

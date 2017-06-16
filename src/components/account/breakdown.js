@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Row, Col, Table } from 'react-bootstrap'
 import { formatBalance } from '../../util/belt';
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import socket from '../../socket'
 
 

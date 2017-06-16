@@ -5,9 +5,6 @@ import { randomPassword, validatePassword } from '../../util/belt'
 import userInfo from '../../core/user-info';
 import refresher from '../../refresher';
 import notification from '../../core/notification'
-import { browserHistory } from 'react-router'
-
-
 
 class UpdatePassword extends PureComponent {
   constructor(props) {
@@ -55,7 +52,7 @@ class UpdatePassword extends PureComponent {
         .then(info => {
           console.log(info);
 					this.setState({ submitting: false});
-          browserHistory.push('/');
+          this.props.history.push('/');
           notification.setMessage(<span><span className="green-tag">Success!</span> Your password has been updated.</span>);
         }, err => {
 					this.setState({ submitting: false});
